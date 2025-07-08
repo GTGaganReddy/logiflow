@@ -406,7 +406,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { journeyMilestones, ...loadData } = req.body;
       
-      // Validate customer load data
+      // Auto-generate slNo if not provided
+      if (!loadData.slNo) {
+        const timestamp = Date.now();
+        loadData.slNo = `EXT-${timestamp}`;
+      }
+      
+      // Add createdAt timestamp
+      loadData.createdAt = new Date().toISOString();
+      
+      // Validate customer load data using the standard schema (now with slNo populated)
       const validatedLoad = insertCustomerLoadSchema.parse(loadData);
       
       // Create the customer load
@@ -417,18 +426,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (journeyMilestones && Array.isArray(journeyMilestones)) {
         createdMilestones = await Promise.all(
           journeyMilestones.map(async (milestone: any) => {
+            // Helper function to handle "undefined" string values
+            const cleanValue = (value: any) => {
+              if (value === "undefined" || value === undefined || value === null) {
+                return "";
+              }
+              return String(value);
+            };
+            
             const milestoneData = {
               customerLoadId: newLoad.id,
               sequenceNumber: milestone.sequence || milestone.sequenceNumber || 1,
-              startingPoint: milestone.startingPoint || "",
-              endingPoint: milestone.endingPoint || "",
-              startDate: milestone.startDate || "",
-              endDate: milestone.endDate || "",
-              startTime: milestone.startTime || "",
-              endTime: milestone.endTime || "",
+              startingPoint: cleanValue(milestone.startingPoint),
+              endingPoint: cleanValue(milestone.endingPoint),
+              startDate: cleanValue(milestone.startDate),
+              endDate: cleanValue(milestone.endDate),
+              startTime: cleanValue(milestone.startTime),
+              endTime: cleanValue(milestone.endTime),
               breakTime: milestone.breakHours ? (milestone.breakHours * 60).toString() : undefined,
               status: milestone.status || "pending",
-              notes: milestone.notes || undefined
+              notes: milestone.notes && milestone.notes !== "undefined" ? milestone.notes : undefined
             };
             const validatedMilestone = insertJourneyMilestoneSchema.parse(milestoneData);
             return await storage.createJourneyMilestone(validatedMilestone);

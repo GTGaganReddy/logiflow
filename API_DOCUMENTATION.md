@@ -113,11 +113,11 @@ Creates a new customer load with optional journey milestones in a single request
 **Request Body:**
 ```json
 {
-  "slNo": "004",
-  "customerName": "New Customer Ltd",
-  "algoAssignedResource": "TRK-003",
-  "humanReservedResource": null,
-  "priority": "medium",
+  "customerName": "Blautal Maschinenbau AG",
+  "algoAssignedResource": "W-792XY",
+  "priority": "low",
+  "deliveryStartDate": "2025-04-14",
+  "deliveryStartTime": "11:36",
   "status": "pending",
   "remark": "Standard delivery",
   "deliveryStartDate": "2024-01-20",
