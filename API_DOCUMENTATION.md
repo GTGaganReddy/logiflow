@@ -21,11 +21,16 @@ Creates a new customer load entry in the dashboard.
   "location": "New York",
   "priority": "High",
   "deliveryDate": "2025-07-10",
+  "deliveryStartDate": "2025-07-09",
+  "deliveryEndDate": "2025-07-11",
+  "deliveryStartTime": "08:00",
+  "deliveryEndTime": "18:00",
   "startTime": "09:00",
   "endTime": "17:00",
   "remark": "Urgent delivery",
   "algoAssignedResource": "TRK-001",
-  "humanReservedResource": ""
+  "humanReservedResource": "",
+  "deliveryStatus": "pending"
 }
 ```
 
@@ -35,12 +40,17 @@ Creates a new customer load entry in the dashboard.
 
 **Optional Fields:**
 - `location` (string): Pickup/delivery location
-- `deliveryDate` (string): Date in YYYY-MM-DD format
-- `startTime` (string): Start time in HH:MM format
-- `endTime` (string): End time in HH:MM format
-- `remark` (string): Additional notes
+- `deliveryDate` (string): Single delivery date in YYYY-MM-DD format (legacy field)
+- `deliveryStartDate` (string): Delivery start date for multi-day deliveries in YYYY-MM-DD format
+- `deliveryEndDate` (string): Delivery end date for multi-day deliveries in YYYY-MM-DD format
+- `deliveryStartTime` (string): Delivery start time in HH:MM format
+- `deliveryEndTime` (string): Delivery end time in HH:MM format
+- `startTime` (string): Legacy start time in HH:MM format
+- `endTime` (string): Legacy end time in HH:MM format
+- `remark` (string): Additional notes or special instructions
 - `algoAssignedResource` (string): Truck plate number assigned by algorithm
-- `humanReservedResource` (string): Truck plate number reserved by human
+- `humanReservedResource` (string): Truck plate number reserved by human operator
+- `deliveryStatus` (string): Initial delivery status (defaults to "pending")
 
 **Response:**
 ```json
@@ -137,16 +147,17 @@ Creates a new journey milestone for tracking progress during delivery.
 
 **Required Fields:**
 - `customerLoadId` (number): ID of the customer load
-- `sequence` (number): Order sequence of the milestone
-- `location` (string): Location of the milestone
+- At least one of: `sequence`, `location`, or `description` must be provided
 
 **Optional Fields:**
+- `sequence` (number): Order sequence of the milestone (auto-generated if not provided)
+- `location` (string): Location of the milestone
 - `description` (string): Description of the milestone
 - `expectedTime` (string): Expected time in HH:MM format
 - `actualTime` (string): Actual time in HH:MM format
-- `status` (string): Must be "pending", "in-progress", "completed", or "delayed"
-- `isBreakTime` (boolean): Whether this is a break milestone
-- `breakDurationMinutes` (number): Duration of break in minutes
+- `status` (string): Must be "pending", "in-progress", "completed", or "delayed" (defaults to "pending")
+- `isBreakTime` (boolean): Whether this is a break milestone (defaults to false)
+- `breakDurationMinutes` (number): Duration of break in minutes (defaults to 0)
 
 **Response:**
 ```json
@@ -246,13 +257,18 @@ Updates a specific journey milestone.
     "properties": {
       "customerName": {"type": "string", "description": "Customer name"},
       "location": {"type": "string", "description": "Pickup/delivery location"},
-      "priority": {"type": "string", "enum": ["High", "Medium", "Low"]},
-      "deliveryDate": {"type": "string", "format": "date"},
-      "startTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "endTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "remark": {"type": "string"},
-      "algoAssignedResource": {"type": "string"},
-      "humanReservedResource": {"type": "string"}
+      "priority": {"type": "string", "enum": ["High", "Medium", "Low"], "description": "Load priority level"},
+      "deliveryDate": {"type": "string", "format": "date", "description": "Delivery date in YYYY-MM-DD format"},
+      "deliveryStartDate": {"type": "string", "format": "date", "description": "Delivery start date for multi-day deliveries"},
+      "deliveryEndDate": {"type": "string", "format": "date", "description": "Delivery end date for multi-day deliveries"},
+      "deliveryStartTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Delivery start time in HH:MM format"},
+      "deliveryEndTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Delivery end time in HH:MM format"},
+      "startTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Legacy start time field"},
+      "endTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Legacy end time field"},
+      "remark": {"type": "string", "description": "Additional notes or remarks"},
+      "algoAssignedResource": {"type": "string", "description": "Truck plate number assigned by algorithm"},
+      "humanReservedResource": {"type": "string", "description": "Truck plate number reserved by human"},
+      "deliveryStatus": {"type": "string", "enum": ["pending", "in-progress", "completed", "cancelled"], "description": "Current delivery status"}
     },
     "required": ["customerName", "priority"]
   }
@@ -268,11 +284,18 @@ Updates a specific journey milestone.
     "type": "object",
     "properties": {
       "id": {"type": "integer", "description": "Load ID"},
-      "deliveryStatus": {"type": "string", "enum": ["pending", "in-progress", "completed", "cancelled"]},
-      "startTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "endTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"}
+      "deliveryStatus": {"type": "string", "enum": ["pending", "in-progress", "completed", "cancelled"], "description": "Updated delivery status"},
+      "deliveryStartDate": {"type": "string", "format": "date", "description": "Updated delivery start date"},
+      "deliveryEndDate": {"type": "string", "format": "date", "description": "Updated delivery end date"},
+      "deliveryStartTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Updated delivery start time"},
+      "deliveryEndTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Updated delivery end time"},
+      "startTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Legacy start time field"},
+      "endTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Legacy end time field"},
+      "algoAssignedResource": {"type": "string", "description": "Updated truck assignment"},
+      "humanReservedResource": {"type": "string", "description": "Updated human truck reservation"},
+      "remark": {"type": "string", "description": "Updated remarks"}
     },
-    "required": ["id", "deliveryStatus"]
+    "required": ["id"]
   }
 }
 ```
@@ -289,13 +312,13 @@ Updates a specific journey milestone.
       "sequence": {"type": "integer", "description": "Order sequence of milestone"},
       "location": {"type": "string", "description": "Milestone location"},
       "description": {"type": "string", "description": "Milestone description"},
-      "expectedTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"]},
+      "expectedTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Expected time in HH:MM format"},
+      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Actual time in HH:MM format"},
+      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"], "description": "Milestone status"},
       "isBreakTime": {"type": "boolean", "description": "Whether this is a break milestone"},
       "breakDurationMinutes": {"type": "integer", "description": "Break duration in minutes"}
     },
-    "required": ["customerLoadId", "sequence", "location"]
+    "required": ["customerLoadId"]
   }
 }
 ```
@@ -309,9 +332,14 @@ Updates a specific journey milestone.
     "type": "object",
     "properties": {
       "id": {"type": "integer", "description": "Milestone ID"},
-      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
-      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"]},
-      "description": {"type": "string", "description": "Updated description"}
+      "sequence": {"type": "integer", "description": "Updated order sequence"},
+      "location": {"type": "string", "description": "Updated milestone location"},
+      "description": {"type": "string", "description": "Updated milestone description"},
+      "expectedTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Updated expected time"},
+      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", "description": "Updated actual time"},
+      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"], "description": "Updated status"},
+      "isBreakTime": {"type": "boolean", "description": "Updated break time flag"},
+      "breakDurationMinutes": {"type": "integer", "description": "Updated break duration"}
     },
     "required": ["id"]
   }
