@@ -11,7 +11,9 @@ interface DeliveryRangeDisplayProps {
 export default function DeliveryRangeDisplay({ customerLoad }: DeliveryRangeDisplayProps) {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
-    const date = new Date(dateString);
+    // Parse the date string safely to avoid timezone issues
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
     return date.toLocaleDateString('en-US', { 
       weekday: 'short', 
       year: 'numeric', 
@@ -38,8 +40,13 @@ export default function DeliveryRangeDisplay({ customerLoad }: DeliveryRangeDisp
   const calculateDuration = () => {
     if (!customerLoad.deliveryStartDate || !customerLoad.deliveryEndDate) return "Unknown";
     
-    const start = new Date(customerLoad.deliveryStartDate);
-    const end = new Date(customerLoad.deliveryEndDate);
+    // Parse dates safely to avoid timezone issues
+    const [startYear, startMonth, startDay] = customerLoad.deliveryStartDate.split('-').map(Number);
+    const [endYear, endMonth, endDay] = customerLoad.deliveryEndDate.split('-').map(Number);
+    
+    const start = new Date(startYear, startMonth - 1, startDay);
+    const end = new Date(endYear, endMonth - 1, endDay);
+    
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
