@@ -6,19 +6,14 @@ import FleetStatus from "@/components/FleetStatus";
 import LogisticsNotepad from "@/components/LogisticsNotepad";
 import AddCustomerModal from "@/components/AddCustomerModal";
 import DashboardStats from "@/components/DashboardStats";
-import DeliveryRangeDisplay from "@/components/DeliveryRangeDisplay";
-import { useQuery } from "@tanstack/react-query";
-import { CustomerLoad } from "@shared/schema";
+
+
+
 
 export default function Dashboard() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
-  const { data: loads = [] } = useQuery<CustomerLoad[]>({
-    queryKey: ["/api/customer-loads"],
-  });
 
-  // Get the most recent active load for delivery range display
-  const activeLoad = loads.find(load => load.deliveryStatus === "in-progress") || loads[0];
 
   return (
     <div className="bg-neutral-50 min-h-screen">
@@ -48,13 +43,7 @@ export default function Dashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
-        {/* Delivery Range Display */}
-        {activeLoad && (
-          <div className="mb-6">
-            <DeliveryRangeDisplay customerLoad={activeLoad} />
-          </div>
-        )}
-        
+
         <div className="space-y-6">
           <DashboardStats />
           <CustomerLoadTable />
