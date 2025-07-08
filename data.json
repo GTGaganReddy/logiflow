@@ -1231,7 +1231,7 @@
       "endTime": "10:00",
       "breakTime": null,
       "status": "pending",
-      "notes": null,
+      "notes": "External API test note",
       "id": 85
     },
     {

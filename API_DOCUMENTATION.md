@@ -45,7 +45,8 @@ Retrieves all customer loads including their journey milestones in a single resp
           "endDate": "2024-01-16",
           "startTime": "08:00",
           "endTime": "20:00",
-          "breakHours": 8
+          "breakHours": 8,
+          "notes": "Driver confirmed pickup scheduled"
         },
         {
           "id": 2,
@@ -57,7 +58,8 @@ Retrieves all customer loads including their journey milestones in a single resp
           "endDate": "2024-01-17",
           "startTime": "09:00",
           "endTime": "17:00",
-          "breakHours": 2
+          "breakHours": 2,
+          "notes": "Delivery window confirmed with customer"
         }
       ]
     }
@@ -98,7 +100,8 @@ Retrieves a specific customer load including its journey milestones.
         "endDate": "2024-01-16",
         "startTime": "08:00",
         "endTime": "20:00",
-        "breakHours": 8
+        "breakHours": 8,
+        "notes": "Driver confirmed pickup scheduled"
       }
     ]
   }
@@ -133,7 +136,8 @@ Creates a new customer load with optional journey milestones in a single request
       "endDate": "2024-01-20",
       "startTime": "09:00",
       "endTime": "16:00",
-      "breakHours": 1
+      "breakHours": 1,
+      "notes": "Initial pickup scheduled"
     }
   ]
 }
@@ -164,6 +168,7 @@ Creates a new customer load with optional journey milestones in a single request
 - `startTime` (string): Start time in HH:MM format
 - `endTime` (string): End time in HH:MM format
 - `breakHours` (number): Break hours during this milestone
+- `notes` (string): Optional notes for the milestone
 
 **Response:**
 ```json
@@ -194,7 +199,8 @@ Creates a new customer load with optional journey milestones in a single request
         "endDate": "2024-01-20",
         "startTime": "09:00",
         "endTime": "16:00",
-        "breakHours": 1
+        "breakHours": 1,
+        "notes": "Initial pickup scheduled"
       }
     ]
   }
@@ -220,7 +226,8 @@ Updates an existing customer load and optionally replaces its journey milestones
       "endDate": "2024-01-21",
       "startTime": "10:00",
       "endTime": "17:00",
-      "breakHours": 2
+      "breakHours": 2,
+      "notes": "Updated delivery schedule"
     }
   ]
 }
@@ -250,7 +257,8 @@ Updates an existing customer load and optionally replaces its journey milestones
         "endDate": "2024-01-21",
         "startTime": "10:00",
         "endTime": "17:00",
-        "breakHours": 2
+        "breakHours": 2,
+        "notes": "Updated delivery schedule"
       }
     ]
   }
