@@ -245,6 +245,51 @@ Updates a specific journey milestone.
 }
 ```
 
+### 7. Get Logistics Notepad
+**GET** `/api/external/notepad`
+
+Retrieves the current logistics notepad content.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "content": "Meeting notes:\n- Truck TRK-001 maintenance scheduled for next week\n- Priority delivery for Global Logistics Corp\n- Contact John at warehouse for special handling",
+    "updatedAt": "2025-07-08T20:11:30.000Z"
+  }
+}
+```
+
+### 8. Update Logistics Notepad
+**PUT** `/api/external/notepad`
+
+Updates the logistics notepad content.
+
+**Request Body:**
+```json
+{
+  "content": "Updated meeting notes:\n- Truck TRK-001 maintenance completed\n- Priority delivery for Global Logistics Corp - COMPLETED\n- Contact John at warehouse for special handling\n- New urgent delivery scheduled for tomorrow"
+}
+```
+
+**Required Fields:**
+- `content` (string): The complete notepad content
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Notepad updated successfully",
+  "data": {
+    "id": 1,
+    "content": "Updated meeting notes:\n- Truck TRK-001 maintenance completed\n- Priority delivery for Global Logistics Corp - COMPLETED\n- Contact John at warehouse for special handling\n- New urgent delivery scheduled for tomorrow",
+    "updatedAt": "2025-07-08T21:15:45.000Z"
+  }
+}
+```
+
 ## Example Usage for GPT Assistant Actions
 
 ### Action 1: Add Customer Load
@@ -346,6 +391,34 @@ Updates a specific journey milestone.
 }
 ```
 
+### Action 5: Get Logistics Notepad
+```json
+{
+  "name": "get_logistics_notepad",
+  "description": "Retrieve the current logistics notepad content",
+  "parameters": {
+    "type": "object",
+    "properties": {},
+    "required": []
+  }
+}
+```
+
+### Action 6: Update Logistics Notepad
+```json
+{
+  "name": "update_logistics_notepad",
+  "description": "Update the logistics notepad content",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "content": {"type": "string", "description": "Complete notepad content including notes, reminders, and operational information"}
+    },
+    "required": ["content"]
+  }
+}
+```
+
 ## Natural Language Processing Examples
 
 Your GPT assistant can process natural language input like:
@@ -359,6 +432,10 @@ Your GPT assistant can process natural language input like:
 - "Update milestone 3 status to completed with actual time 2:15 PM"
 - "Create break milestone for load 2 with 30 minutes duration"
 - "Mark delivery milestone as delayed with actual time 6:30 PM"
+- "Get the current notepad content to review operational notes"
+- "Add a note about truck maintenance scheduled for next week"
+- "Update notepad with today's delivery completion status"
+- "Record special handling instructions for tomorrow's urgent delivery"
 
 The assistant should parse these commands and make the appropriate API calls to update the dashboard.
 
