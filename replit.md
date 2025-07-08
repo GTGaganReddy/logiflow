@@ -97,22 +97,29 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
-### July 8, 2025
-- **Added Date/Time Tracking**: Enhanced customer load schema with delivery date, start/end times, and delivery status tracking
-- **Delivery Journey Tooltips**: Added hover functionality on resource badges to display delivery schedule and status information
-- **External API Integration**: Created dedicated API endpoints for GPT assistant integration at `/api/external/`
-- **Enhanced Form Fields**: Updated add customer modal with delivery date, time slots, and status selection
-- **Sample Data**: Added realistic sample customer loads to demonstrate functionality
-- **API Documentation**: Created comprehensive API documentation for external integrations
+### July 8, 2025 - Milestone Tracking System
+- **Enhanced Delivery Schema**: Updated customer load schema with separate start/end dates and times for multi-day deliveries
+- **Journey Milestone System**: Created comprehensive milestone tracking with starting/ending points, dates, times, and break tracking
+- **Expandable Journey Details**: Added clickable truck resources in table to unfold detailed milestone information
+- **Delivery Range Display**: Added prominent delivery range display at top of dashboard showing duration and time windows
+- **API Routes for Milestones**: Created full CRUD API endpoints for journey milestone management
+- **Sample Journey Data**: Added realistic multi-day journey with milestone progression
 
-### External API Endpoints Added:
-- `POST /api/external/customer-loads` - Create customer loads from external systems
-- `PUT /api/external/customer-loads/:id/status` - Update delivery status and times
-- `GET /api/external/customer-loads` - Retrieve all customer loads
+### New Data Model Features:
+- `deliveryStartDate` and `deliveryEndDate` for multi-day deliveries
+- `deliveryStartTime` and `deliveryEndTime` for precise scheduling
+- `journeyMilestones` table with sequence tracking, locations, times, and break periods
+- Enhanced external API endpoints with new field names
 
-### Enhanced Data Model:
-- Added `createdAt`, `deliveryDate`, `startTime`, `endTime`, and `deliveryStatus` fields
-- Improved type safety with proper null handling
-- Added delivery status options: pending, in-progress, completed, cancelled
+### New Components:
+- `DeliveryRangeDisplay` - Shows delivery duration and schedule at dashboard top
+- `JourneyMilestones` - Expandable table showing detailed milestone progress
+- Enhanced `CustomerLoadTable` with collapsible milestone details
+- Updated form fields for start/end date selection
+
+### API Enhancements:
+- `/api/journey-milestones/:customerLoadId` - Get milestones for specific load
+- `/api/journey-milestones` - Create, update, delete milestone entries
+- Updated external API endpoints to support new delivery date structure
 
 The application is designed with scalability in mind, using a modular architecture that can easily transition from file-based storage to a full database system as requirements grow.

@@ -12,10 +12,26 @@ export const customerLoads = pgTable("customer_loads", {
   priority: text("priority").notNull(),
   remark: text("remark"),
   createdAt: text("created_at").notNull(),
-  deliveryDate: text("delivery_date"),
-  startTime: text("start_time"),
-  endTime: text("end_time"),
+  deliveryStartDate: text("delivery_start_date"),
+  deliveryEndDate: text("delivery_end_date"),
+  deliveryStartTime: text("delivery_start_time"),
+  deliveryEndTime: text("delivery_end_time"),
   deliveryStatus: text("delivery_status").notNull().default("pending"), // pending, in-progress, completed, cancelled
+});
+
+export const journeyMilestones = pgTable("journey_milestones", {
+  id: serial("id").primaryKey(),
+  customerLoadId: integer("customer_load_id").notNull(),
+  sequenceNumber: integer("sequence_number").notNull(),
+  startingPoint: text("starting_point").notNull(),
+  endingPoint: text("ending_point").notNull(),
+  startDate: text("start_date").notNull(),
+  startTime: text("start_time").notNull(),
+  endDate: text("end_date").notNull(),
+  endTime: text("end_time").notNull(),
+  breakTime: text("break_time"), // in minutes
+  status: text("status").notNull().default("pending"), // pending, in-progress, completed, cancelled
+  notes: text("notes"),
 });
 
 export const trucks = pgTable("trucks", {
@@ -36,6 +52,10 @@ export const insertCustomerLoadSchema = createInsertSchema(customerLoads).omit({
   createdAt: true,
 });
 
+export const insertJourneyMilestoneSchema = createInsertSchema(journeyMilestones).omit({
+  id: true,
+});
+
 export const insertTruckSchema = createInsertSchema(trucks).omit({
   id: true,
 });
@@ -46,6 +66,8 @@ export const insertNotepadSchema = createInsertSchema(notepad).omit({
 
 export type CustomerLoad = typeof customerLoads.$inferSelect;
 export type InsertCustomerLoad = z.infer<typeof insertCustomerLoadSchema>;
+export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
+export type InsertJourneyMilestone = z.infer<typeof insertJourneyMilestoneSchema>;
 export type Truck = typeof trucks.$inferSelect;
 export type InsertTruck = z.infer<typeof insertTruckSchema>;
 export type Notepad = typeof notepad.$inferSelect;

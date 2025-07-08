@@ -10,9 +10,10 @@
       "priority": "High",
       "remark": "Urgent delivery for international client",
       "createdAt": "2025-07-08T10:30:00.000Z",
-      "deliveryDate": "2025-07-09",
-      "startTime": "08:00",
-      "endTime": "18:00",
+      "deliveryStartDate": "2025-07-09",
+      "deliveryEndDate": "2025-07-11",
+      "deliveryStartTime": "08:00",
+      "deliveryEndTime": "18:00",
       "deliveryStatus": "in-progress"
     },
     {
@@ -25,9 +26,10 @@
       "priority": "Medium",
       "remark": "Regular weekly delivery",
       "createdAt": "2025-07-08T14:15:00.000Z",
-      "deliveryDate": "2025-07-10",
-      "startTime": "09:00",
-      "endTime": "17:00",
+      "deliveryStartDate": "2025-07-10",
+      "deliveryEndDate": "2025-07-10",
+      "deliveryStartTime": "09:00",
+      "deliveryEndTime": "17:00",
       "deliveryStatus": "pending"
     },
     {
@@ -40,9 +42,10 @@
       "priority": "Low",
       "remark": "Standard delivery schedule",
       "createdAt": "2025-07-08T16:45:00.000Z",
-      "deliveryDate": "2025-07-11",
-      "startTime": "10:00",
-      "endTime": "16:00",
+      "deliveryStartDate": "2025-07-11",
+      "deliveryEndDate": "2025-07-12",
+      "deliveryStartTime": "10:00",
+      "deliveryEndTime": "16:00",
       "deliveryStatus": "pending"
     }
   ],
@@ -81,9 +84,53 @@
   "notepad": [
     {
       "id": 1,
-      "content": "",
-      "updatedAt": "2025-07-08T20:06:43.867Z"
+      "content": "Hello testing. ",
+      "updatedAt": "2025-07-08T20:18:46.817Z"
     }
   ],
-  "users": []
+  "users": [],
+  "journeyMilestones": [
+    {
+      "id": 1,
+      "customerLoadId": 1,
+      "sequenceNumber": 1,
+      "startingPoint": "New York Warehouse",
+      "endingPoint": "Philadelphia Hub",
+      "startDate": "2025-07-09",
+      "startTime": "08:00",
+      "endDate": "2025-07-09",
+      "endTime": "12:00",
+      "breakTime": "30",
+      "status": "completed",
+      "notes": "Traffic delay on I-95"
+    },
+    {
+      "id": 2,
+      "customerLoadId": 1,
+      "sequenceNumber": 2,
+      "startingPoint": "Philadelphia Hub",
+      "endingPoint": "Baltimore Distribution Center",
+      "startDate": "2025-07-09",
+      "startTime": "13:00",
+      "endDate": "2025-07-09",
+      "endTime": "16:00",
+      "breakTime": "20",
+      "status": "in-progress",
+      "notes": "Currently loading at Philadelphia"
+    },
+    {
+      "id": 3,
+      "customerLoadId": 1,
+      "sequenceNumber": 3,
+      "startingPoint": "Baltimore Distribution Center",
+      "endingPoint": "Final Destination",
+      "startDate": "2025-07-10",
+      "startTime": "09:00",
+      "endDate": "2025-07-11",
+      "endTime": "18:00",
+      "breakTime": "45",
+      "status": "pending",
+      "notes": "Overnight rest stop planned"
+    }
+  ]
 }

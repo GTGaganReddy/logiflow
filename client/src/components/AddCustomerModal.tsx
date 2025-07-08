@@ -24,9 +24,10 @@ interface AddCustomerModalProps {
 const formSchema = insertCustomerLoadSchema.extend({
   customerName: z.string().min(1, "Customer name is required"),
   priority: z.enum(["High", "Medium", "Low"]),
-  deliveryDate: z.string().optional(),
-  startTime: z.string().optional(),
-  endTime: z.string().optional(),
+  deliveryStartDate: z.string().optional(),
+  deliveryEndDate: z.string().optional(),
+  deliveryStartTime: z.string().optional(),
+  deliveryEndTime: z.string().optional(),
   deliveryStatus: z.enum(["pending", "in-progress", "completed", "cancelled"]).optional(),
 });
 
@@ -43,9 +44,10 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
       humanReservedResource: "",
       priority: "Medium",
       remark: "",
-      deliveryDate: "",
-      startTime: "",
-      endTime: "",
+      deliveryStartDate: "",
+      deliveryEndDate: "",
+      deliveryStartTime: "",
+      deliveryEndTime: "",
       deliveryStatus: "pending",
     },
   });
@@ -89,9 +91,9 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
     const loadData: InsertCustomerLoad = {
       ...data,
       slNo,
-      // If truck assignment is set to "auto-assign", clear the field
+      // If truck assignment is set to "auto-assign" or "none", clear the field
       algoAssignedResource: data.algoAssignedResource === "auto-assign" ? "" : data.algoAssignedResource,
-      humanReservedResource: data.humanReservedResource === "auto-assign" ? "" : data.humanReservedResource,
+      humanReservedResource: data.humanReservedResource === "auto-assign" || data.humanReservedResource === "none" ? "" : data.humanReservedResource,
     };
 
     createMutation.mutate(loadData);
@@ -198,7 +200,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {availableTrucks.map((truck) => (
                         <SelectItem key={truck.id} value={truck.plateNumber}>
                           {truck.plateNumber}
@@ -211,24 +213,40 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="deliveryDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Delivery Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="deliveryStartDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Delivery Start Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="deliveryEndDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Delivery End Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="startTime"
+                name="deliveryStartTime"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Start Time</FormLabel>
@@ -242,7 +260,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
 
               <FormField
                 control={form.control}
-                name="endTime"
+                name="deliveryEndTime"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>End Time</FormLabel>

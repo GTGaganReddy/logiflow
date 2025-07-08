@@ -1,22 +1,38 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock } from "lucide-react";
+import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { CustomerLoad } from "@shared/schema";
+import JourneyMilestones from "./JourneyMilestones";
 
 export default function CustomerLoadTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const { toast } = useToast();
+
+  const toggleRowExpansion = (loadId: number) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(loadId)) {
+        newSet.delete(loadId);
+      } else {
+        newSet.add(loadId);
+      }
+      return newSet;
+    });
+  };
 
   const { data: loads = [], isLoading } = useQuery<CustomerLoad[]>({
     queryKey: ["/api/customer-loads"],
@@ -174,12 +190,13 @@ export default function CustomerLoadTable() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12"></TableHead>
                   <TableHead>Sl. No</TableHead>
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Algo Assigned Resource</TableHead>
                   <TableHead>Human Reserved Resource</TableHead>
                   <TableHead>Priority</TableHead>
-                  <TableHead>Delivery Date</TableHead>
+                  <TableHead>Delivery Schedule</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Remark</TableHead>
                   <TableHead>Action</TableHead>
@@ -188,14 +205,29 @@ export default function CustomerLoadTable() {
               <TableBody>
                 {filteredLoads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-neutral-500">
+                    <TableCell colSpan={10} className="text-center py-8 text-neutral-500">
                       No customer loads found. Add your first load to get started.
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredLoads.map((load) => (
-                    <TableRow key={load.id} className="hover:bg-neutral-50">
-                      <TableCell>{load.slNo}</TableCell>
+                    <React.Fragment key={load.id}>
+                      <TableRow className="hover:bg-neutral-50">
+                        <TableCell>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => toggleRowExpansion(load.id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            {expandedRows.has(load.id) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell>{load.slNo}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -278,6 +310,16 @@ export default function CustomerLoadTable() {
                         </div>
                       </TableCell>
                     </TableRow>
+                    {expandedRows.has(load.id) && (
+                      <TableRow>
+                        <TableCell colSpan={10} className="p-0">
+                          <div className="p-4 bg-gray-50 border-t">
+                            <JourneyMilestones customerLoadId={load.id} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                   ))
                 )}
               </TableBody>

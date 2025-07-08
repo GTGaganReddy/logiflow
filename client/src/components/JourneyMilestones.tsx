@@ -1,0 +1,186 @@
+import { useQuery } from "@tanstack/react-query";
+import { JourneyMilestone } from "@shared/schema";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { MapPin, Clock, Coffee, CheckCircle, Circle, XCircle } from "lucide-react";
+
+interface JourneyMilestonesProps {
+  customerLoadId: number;
+}
+
+export default function JourneyMilestones({ customerLoadId }: JourneyMilestonesProps) {
+  const { data: milestones = [], isLoading, error } = useQuery<JourneyMilestone[]>({
+    queryKey: ["/api/journey-milestones", customerLoadId],
+    queryFn: async () => {
+      const response = await fetch(`/api/journey-milestones/${customerLoadId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
+  });
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case "in-progress":
+        return <Circle className="h-4 w-4 text-blue-600 animate-pulse" />;
+      case "cancelled":
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return <Circle className="h-4 w-4 text-gray-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed": return "bg-green-100 text-green-800";
+      case "in-progress": return "bg-blue-100 text-blue-800";
+      case "cancelled": return "bg-red-100 text-red-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const formatBreakTime = (breakTime: string | null) => {
+    if (!breakTime) return "None";
+    const minutes = parseInt(breakTime);
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    }
+    return `${minutes}m`;
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Journey Milestones</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Journey Milestones</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-red-600">
+            Error loading journey milestones
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (milestones.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Journey Milestones</CardTitle>
+          <CardDescription>No journey milestones have been created for this load yet.</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          Journey Milestones
+        </CardTitle>
+        <CardDescription>
+          Track the progress of this delivery through various checkpoints
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">Step</TableHead>
+              <TableHead>Route</TableHead>
+              <TableHead>Schedule</TableHead>
+              <TableHead className="w-20">Break</TableHead>
+              <TableHead className="w-20">Status</TableHead>
+              <TableHead>Notes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {milestones
+              .sort((a, b) => a.sequenceNumber - b.sequenceNumber)
+              .map((milestone) => (
+                <TableRow key={milestone.id}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(milestone.status)}
+                      {milestone.sequenceNumber}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="text-sm font-medium">{milestone.startingPoint}</div>
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <span>→</span>
+                        <span>{milestone.endingPoint}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="text-sm">
+                        <span className="font-medium">{formatDate(milestone.startDate)}</span>
+                        <span className="text-gray-500"> at </span>
+                        <span>{milestone.startTime}</span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="font-medium">{formatDate(milestone.endDate)}</span>
+                        <span className="text-gray-500"> at </span>
+                        <span>{milestone.endTime}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Coffee className="h-3 w-3 text-gray-400" />
+                      {formatBreakTime(milestone.breakTime)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(milestone.status)}>
+                      {milestone.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-gray-600 max-w-xs">
+                      {milestone.notes || "No notes"}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}

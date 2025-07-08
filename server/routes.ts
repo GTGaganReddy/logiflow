@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCustomerLoadSchema, insertTruckSchema } from "@shared/schema";
+import { insertCustomerLoadSchema, insertTruckSchema, insertJourneyMilestoneSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -169,7 +169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Content-Type");
       
-      const { customerName, location, priority, deliveryDate, startTime, endTime, remark, algoAssignedResource, humanReservedResource } = req.body;
+      const { customerName, location, priority, deliveryStartDate, deliveryEndDate, deliveryStartTime, deliveryEndTime, remark, algoAssignedResource, humanReservedResource } = req.body;
       
       if (!customerName || !priority) {
         return res.status(400).json({ 
@@ -178,9 +178,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             customerName: "ABC Corp",
             location: "New York",
             priority: "High",
-            deliveryDate: "2025-07-10",
-            startTime: "09:00",
-            endTime: "17:00",
+            deliveryStartDate: "2025-07-10",
+            deliveryEndDate: "2025-07-11",
+            deliveryStartTime: "09:00",
+            deliveryEndTime: "17:00",
             remark: "Urgent delivery",
             algoAssignedResource: "TRK-001",
             humanReservedResource: ""
@@ -197,9 +198,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerName,
         location: location || "",
         priority,
-        deliveryDate: deliveryDate || "",
-        startTime: startTime || "",
-        endTime: endTime || "",
+        deliveryStartDate: deliveryStartDate || "",
+        deliveryEndDate: deliveryEndDate || "",
+        deliveryStartTime: deliveryStartTime || "",
+        deliveryEndTime: deliveryEndTime || "",
         remark: remark || "",
         algoAssignedResource: algoAssignedResource || "",
         humanReservedResource: humanReservedResource || "",
@@ -237,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.header("Access-Control-Allow-Headers", "Content-Type");
       
       const id = parseInt(req.params.id);
-      const { deliveryStatus, startTime, endTime } = req.body;
+      const { deliveryStatus, deliveryStartTime, deliveryEndTime } = req.body;
       
       if (!deliveryStatus || !["pending", "in-progress", "completed", "cancelled"].includes(deliveryStatus)) {
         return res.status(400).json({ 
@@ -247,8 +249,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const updateData: any = { deliveryStatus };
-      if (startTime) updateData.startTime = startTime;
-      if (endTime) updateData.endTime = endTime;
+      if (deliveryStartTime) updateData.deliveryStartTime = deliveryStartTime;
+      if (deliveryEndTime) updateData.deliveryEndTime = deliveryEndTime;
       
       const load = await storage.updateCustomerLoad(id, updateData);
       if (!load) {
@@ -286,6 +288,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Failed to fetch customer loads" 
       });
+    }
+  });
+
+  // Journey Milestones routes
+  app.get("/api/journey-milestones/:customerLoadId", async (req, res) => {
+    try {
+      const customerLoadId = parseInt(req.params.customerLoadId);
+      if (isNaN(customerLoadId)) {
+        return res.status(400).json({ message: "Invalid customer load ID" });
+      }
+      
+      const milestones = await storage.getJourneyMilestones(customerLoadId);
+      res.json(milestones);
+    } catch (error) {
+      console.error("Error fetching journey milestones:", error);
+      res.status(500).json({ message: "Failed to fetch journey milestones" });
+    }
+  });
+
+  app.post("/api/journey-milestones", async (req, res) => {
+    try {
+      const validation = insertJourneyMilestoneSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ message: "Invalid data", errors: validation.error.issues });
+      }
+      
+      const milestone = await storage.createJourneyMilestone(validation.data);
+      res.json(milestone);
+    } catch (error) {
+      console.error("Error creating journey milestone:", error);
+      res.status(500).json({ message: "Failed to create journey milestone" });
+    }
+  });
+
+  app.put("/api/journey-milestones/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid milestone ID" });
+      }
+      
+      const validation = insertJourneyMilestoneSchema.partial().safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ message: "Invalid data", errors: validation.error.issues });
+      }
+      
+      const milestone = await storage.updateJourneyMilestone(id, validation.data);
+      if (!milestone) {
+        return res.status(404).json({ message: "Milestone not found" });
+      }
+      
+      res.json(milestone);
+    } catch (error) {
+      console.error("Error updating journey milestone:", error);
+      res.status(500).json({ message: "Failed to update journey milestone" });
+    }
+  });
+
+  app.delete("/api/journey-milestones/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid milestone ID" });
+      }
+      
+      const success = await storage.deleteJourneyMilestone(id);
+      if (!success) {
+        return res.status(404).json({ message: "Milestone not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting journey milestone:", error);
+      res.status(500).json({ message: "Failed to delete journey milestone" });
     }
   });
 

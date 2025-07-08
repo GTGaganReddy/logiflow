@@ -1,4 +1,4 @@
-import { users, customerLoads, trucks, notepad, type User, type InsertUser, type CustomerLoad, type InsertCustomerLoad, type Truck, type InsertTruck, type Notepad, type InsertNotepad } from "@shared/schema";
+import { users, customerLoads, trucks, notepad, journeyMilestones, type User, type InsertUser, type CustomerLoad, type InsertCustomerLoad, type Truck, type InsertTruck, type Notepad, type InsertNotepad, type JourneyMilestone, type InsertJourneyMilestone } from "@shared/schema";
 import fs from 'fs';
 import path from 'path';
 
@@ -9,6 +9,7 @@ interface DataStore {
   trucks: Truck[];
   notepad: Notepad[];
   users: User[];
+  journeyMilestones: JourneyMilestone[];
 }
 
 export interface IStorage {
@@ -33,6 +34,12 @@ export interface IStorage {
   // Notepad
   getNotepad(): Promise<Notepad | undefined>;
   updateNotepad(content: string): Promise<Notepad>;
+  
+  // Journey Milestones
+  getJourneyMilestones(customerLoadId: number): Promise<JourneyMilestone[]>;
+  createJourneyMilestone(milestone: InsertJourneyMilestone): Promise<JourneyMilestone>;
+  updateJourneyMilestone(id: number, milestone: Partial<InsertJourneyMilestone>): Promise<JourneyMilestone | undefined>;
+  deleteJourneyMilestone(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -44,7 +51,8 @@ export class MemStorage implements IStorage {
       users: 1,
       customerLoads: 1,
       trucks: 1,
-      notepad: 1
+      notepad: 1,
+      journeyMilestones: 1
     };
     this.loadData();
   }
@@ -55,17 +63,22 @@ export class MemStorage implements IStorage {
         const fileContent = fs.readFileSync(DATA_FILE, 'utf-8');
         this.data = JSON.parse(fileContent);
         
+        // Ensure all required fields exist
+        if (!this.data.journeyMilestones) this.data.journeyMilestones = [];
+        
         // Update current IDs to prevent conflicts
         this.currentIds.users = this.data.users.length > 0 ? Math.max(...this.data.users.map(u => u.id)) + 1 : 1;
         this.currentIds.customerLoads = this.data.customerLoads.length > 0 ? Math.max(...this.data.customerLoads.map(l => l.id)) + 1 : 1;
         this.currentIds.trucks = this.data.trucks.length > 0 ? Math.max(...this.data.trucks.map(t => t.id)) + 1 : 1;
         this.currentIds.notepad = this.data.notepad.length > 0 ? Math.max(...this.data.notepad.map(n => n.id)) + 1 : 1;
+        this.currentIds.journeyMilestones = this.data.journeyMilestones.length > 0 ? Math.max(...this.data.journeyMilestones.map(m => m.id)) + 1 : 1;
       } else {
         this.data = {
           customerLoads: [],
           trucks: [],
           notepad: [],
-          users: []
+          users: [],
+          journeyMilestones: []
         };
         this.saveData();
       }
@@ -75,7 +88,8 @@ export class MemStorage implements IStorage {
         customerLoads: [],
         trucks: [],
         notepad: [],
-        users: []
+        users: [],
+        journeyMilestones: []
       };
     }
   }
@@ -122,9 +136,10 @@ export class MemStorage implements IStorage {
       humanReservedResource: insertLoad.humanReservedResource || null,
       remark: insertLoad.remark || null,
       createdAt: new Date().toISOString(),
-      deliveryDate: insertLoad.deliveryDate || null,
-      startTime: insertLoad.startTime || null,
-      endTime: insertLoad.endTime || null,
+      deliveryStartDate: insertLoad.deliveryStartDate || null,
+      deliveryEndDate: insertLoad.deliveryEndDate || null,
+      deliveryStartTime: insertLoad.deliveryStartTime || null,
+      deliveryEndTime: insertLoad.deliveryEndTime || null,
       deliveryStatus: insertLoad.deliveryStatus || "pending"
     };
     this.data.customerLoads.push(load);
@@ -205,6 +220,43 @@ export class MemStorage implements IStorage {
     
     this.saveData();
     return this.data.notepad[0];
+  }
+
+  // Journey Milestones methods
+  async getJourneyMilestones(customerLoadId: number): Promise<JourneyMilestone[]> {
+    return this.data.journeyMilestones.filter(milestone => milestone.customerLoadId === customerLoadId);
+  }
+
+  async createJourneyMilestone(insertMilestone: InsertJourneyMilestone): Promise<JourneyMilestone> {
+    const id = this.currentIds.journeyMilestones++;
+    const milestone: JourneyMilestone = { 
+      ...insertMilestone, 
+      id,
+      breakTime: insertMilestone.breakTime || null,
+      notes: insertMilestone.notes || null,
+      status: insertMilestone.status || "pending"
+    };
+    this.data.journeyMilestones.push(milestone);
+    this.saveData();
+    return milestone;
+  }
+
+  async updateJourneyMilestone(id: number, updateData: Partial<InsertJourneyMilestone>): Promise<JourneyMilestone | undefined> {
+    const index = this.data.journeyMilestones.findIndex(milestone => milestone.id === id);
+    if (index === -1) return undefined;
+    
+    this.data.journeyMilestones[index] = { ...this.data.journeyMilestones[index], ...updateData };
+    this.saveData();
+    return this.data.journeyMilestones[index];
+  }
+
+  async deleteJourneyMilestone(id: number): Promise<boolean> {
+    const index = this.data.journeyMilestones.findIndex(milestone => milestone.id === id);
+    if (index === -1) return false;
+    
+    this.data.journeyMilestones.splice(index, 1);
+    this.saveData();
+    return true;
   }
 }
 
