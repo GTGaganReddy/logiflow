@@ -516,13 +516,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           )
         );
         
-        // Create new milestones
+        // Create new milestones with proper field mapping
         currentMilestones = await Promise.all(
           journeyMilestones.map(async (milestone: any) => {
-            const validatedMilestone = insertJourneyMilestoneSchema.parse({
-              ...milestone,
-              customerLoadId: id
-            });
+            // Helper function to handle "undefined" string values
+            const cleanValue = (value: any) => {
+              if (value === "undefined" || value === undefined || value === null) {
+                return "";
+              }
+              return String(value);
+            };
+            
+            const milestoneData = {
+              customerLoadId: id,
+              sequenceNumber: milestone.sequence || milestone.sequenceNumber || 1,
+              startingPoint: cleanValue(milestone.startingPoint),
+              endingPoint: cleanValue(milestone.endingPoint),
+              startDate: cleanValue(milestone.startDate),
+              endDate: cleanValue(milestone.endDate),
+              startTime: cleanValue(milestone.startTime),
+              endTime: cleanValue(milestone.endTime),
+              breakTime: milestone.breakHours ? (milestone.breakHours * 60).toString() : undefined,
+              status: milestone.status || "pending",
+              notes: milestone.notes && milestone.notes !== "undefined" ? milestone.notes : undefined
+            };
+            const validatedMilestone = insertJourneyMilestoneSchema.parse(milestoneData);
             return await storage.createJourneyMilestone(validatedMilestone);
           })
         );
