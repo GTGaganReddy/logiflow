@@ -97,6 +97,29 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
+### July 8, 2025 - Consolidated External API Implementation
+- **Consolidated External API**: Implemented single-endpoint API that combines customer loads with journey milestones in unified responses
+- **External API Endpoints**: Created comprehensive external API with `/api/external/customer-loads` supporting GET, POST, PUT operations
+- **Journey Milestone Integration**: External API supports 1-3 optional journey milestones per customer load in a single request/response
+- **Field Mapping**: Implemented proper field mapping between external API format (`sequence`, `breakHours`) and internal schema (`sequenceNumber`, `breakTime`)
+- **Flexible Validation**: All fields optional except `customerName`, supporting various levels of data completeness
+- **Notepad External API**: Added `/api/external/notepad` endpoints for GET and PUT operations with proper JSON responses
+
+### Consolidated API Features:
+- Single data point for customer loads including embedded journey milestones
+- Consistent `{success: true/false, data: ...}` response format across all external endpoints
+- CORS-enabled for cross-origin access from external systems
+- Proper error handling with detailed validation messages
+- Support for creating, reading, and updating customer loads with associated milestones
+
+### External API Endpoints:
+- `GET /api/external/customer-loads` - Get all loads with milestones
+- `GET /api/external/customer-loads/:id` - Get specific load with milestones
+- `POST /api/external/customer-loads` - Create load with optional milestones
+- `PUT /api/external/customer-loads/:id` - Update load with optional milestone replacement
+- `GET /api/external/notepad` - Get notepad content
+- `PUT /api/external/notepad` - Update notepad content
+
 ### July 8, 2025 - Milestone Tracking System
 - **Enhanced Delivery Schema**: Updated customer load schema with separate start/end dates and times for multi-day deliveries
 - **Journey Milestone System**: Created comprehensive milestone tracking with starting/ending points, dates, times, and break tracking
@@ -104,22 +127,5 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 - **Delivery Range Display**: Added prominent delivery range display at top of dashboard showing duration and time windows
 - **API Routes for Milestones**: Created full CRUD API endpoints for journey milestone management
 - **Sample Journey Data**: Added realistic multi-day journey with milestone progression
-
-### New Data Model Features:
-- `deliveryStartDate` and `deliveryEndDate` for multi-day deliveries
-- `deliveryStartTime` and `deliveryEndTime` for precise scheduling
-- `journeyMilestones` table with sequence tracking, locations, times, and break periods
-- Enhanced external API endpoints with new field names
-
-### New Components:
-- `DeliveryRangeDisplay` - Shows delivery duration and schedule at dashboard top
-- `JourneyMilestones` - Expandable table showing detailed milestone progress
-- Enhanced `CustomerLoadTable` with collapsible milestone details
-- Updated form fields for start/end date selection
-
-### API Enhancements:
-- `/api/journey-milestones/:customerLoadId` - Get milestones for specific load
-- `/api/journey-milestones` - Create, update, delete milestone entries
-- Updated external API endpoints to support new delivery date structure
 
 The application is designed with scalability in mind, using a modular architecture that can easily transition from file-based storage to a full database system as requirements grow.

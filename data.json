@@ -1,22 +1,6 @@
 {
   "customerLoads": [
     {
-      "id": 1,
-      "slNo": "001",
-      "customerName": "Global Logistics Corp",
-      "location": "New York, NY",
-      "algoAssignedResource": "TRK-001",
-      "humanReservedResource": null,
-      "priority": "High",
-      "remark": "Urgent delivery for international client",
-      "createdAt": "2025-07-08T10:30:00.000Z",
-      "deliveryStartDate": "2025-07-09",
-      "deliveryEndDate": "2025-07-11",
-      "deliveryStartTime": "08:00",
-      "deliveryEndTime": "18:00",
-      "deliveryStatus": "in-progress"
-    },
-    {
       "id": 2,
       "slNo": "002",
       "customerName": "Metro Supply Chain",
@@ -46,6 +30,102 @@
       "deliveryEndDate": "2025-07-12",
       "deliveryStartTime": "10:00",
       "deliveryEndTime": "16:00",
+      "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "003",
+      "customerName": "Test Customer",
+      "location": null,
+      "algoAssignedResource": "TRK-001",
+      "humanReservedResource": null,
+      "priority": "high",
+      "remark": "Test delivery with milestones",
+      "deliveryStartDate": "2025-07-15",
+      "deliveryEndDate": "2025-07-16",
+      "deliveryStartTime": "08:00",
+      "deliveryEndTime": "18:00",
+      "deliveryStatus": "pending",
+      "id": 4,
+      "createdAt": "2025-07-08T21:39:25.033Z"
+    },
+    {
+      "slNo": "004",
+      "customerName": "Consolidated Test Customer",
+      "location": null,
+      "algoAssignedResource": "TRK-002",
+      "humanReservedResource": null,
+      "priority": "high",
+      "remark": "Testing consolidated API with milestones",
+      "deliveryStartDate": "2025-07-20",
+      "deliveryEndDate": "2025-07-21",
+      "deliveryStartTime": "08:00",
+      "deliveryEndTime": "18:00",
+      "deliveryStatus": "pending",
+      "id": 5,
+      "createdAt": "2025-07-08T21:40:08.816Z"
+    },
+    {
+      "slNo": "005",
+      "customerName": "Debug Test Customer",
+      "location": null,
+      "algoAssignedResource": "TRK-003",
+      "humanReservedResource": null,
+      "priority": "medium",
+      "remark": "Debug test",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending",
+      "id": 6,
+      "createdAt": "2025-07-08T21:40:32.416Z"
+    },
+    {
+      "slNo": "FINAL-001",
+      "customerName": "Final Test Customer",
+      "priority": "high",
+      "id": 7,
+      "location": null,
+      "algoAssignedResource": null,
+      "humanReservedResource": null,
+      "remark": null,
+      "createdAt": "2025-07-08T21:41:28.703Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "WORKING-001",
+      "customerName": "Working Test Customer",
+      "priority": "high",
+      "id": 8,
+      "location": null,
+      "algoAssignedResource": null,
+      "humanReservedResource": null,
+      "remark": null,
+      "createdAt": "2025-07-08T21:41:50.111Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "WORKING-002",
+      "customerName": "Working Test Customer 2",
+      "priority": "high",
+      "id": 9,
+      "location": null,
+      "algoAssignedResource": null,
+      "humanReservedResource": null,
+      "remark": null,
+      "createdAt": "2025-07-08T21:42:02.652Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
       "deliveryStatus": "pending"
     }
   ],
@@ -84,8 +164,8 @@
   "notepad": [
     {
       "id": 1,
-      "content": "Updated test content from external API",
-      "updatedAt": "2025-07-08T21:22:57.719Z"
+      "content": "Hello there!!!! ",
+      "updatedAt": "2025-07-08T21:29:27.908Z"
     }
   ],
   "users": [],
@@ -131,6 +211,20 @@
       "breakTime": "45",
       "status": "pending",
       "notes": "Overnight rest stop planned"
+    },
+    {
+      "customerLoadId": 9,
+      "sequenceNumber": 1,
+      "startingPoint": "Mumbai Warehouse",
+      "endingPoint": "Delhi Hub",
+      "startDate": "2025-07-25",
+      "startTime": "08:00",
+      "endDate": "2025-07-25",
+      "endTime": "16:00",
+      "breakTime": "120",
+      "status": "pending",
+      "notes": null,
+      "id": 4
     }
   ]
 }

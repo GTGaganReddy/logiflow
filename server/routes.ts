@@ -162,75 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // External API endpoint for GPT agent integration
-  app.post("/api/external/customer-loads", async (req, res) => {
-    try {
-      // Allow external requests from GPT agents
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", "Content-Type");
-      
-      const { customerName, location, priority, deliveryStartDate, deliveryEndDate, deliveryStartTime, deliveryEndTime, remark, algoAssignedResource, humanReservedResource } = req.body;
-      
-      if (!customerName || !priority) {
-        return res.status(400).json({ 
-          message: "Customer name and priority are required",
-          example: {
-            customerName: "ABC Corp",
-            location: "New York",
-            priority: "High",
-            deliveryStartDate: "2025-07-10",
-            deliveryEndDate: "2025-07-11",
-            deliveryStartTime: "09:00",
-            deliveryEndTime: "17:00",
-            remark: "Urgent delivery",
-            algoAssignedResource: "TRK-001",
-            humanReservedResource: ""
-          }
-        });
-      }
 
-      // Get current loads to generate serial number
-      const loads = await storage.getCustomerLoads();
-      const slNo = String(loads.length + 1).padStart(3, '0');
-      
-      const loadData = {
-        slNo,
-        customerName,
-        location: location || "",
-        priority,
-        deliveryStartDate: deliveryStartDate || "",
-        deliveryEndDate: deliveryEndDate || "",
-        deliveryStartTime: deliveryStartTime || "",
-        deliveryEndTime: deliveryEndTime || "",
-        remark: remark || "",
-        algoAssignedResource: algoAssignedResource || "",
-        humanReservedResource: humanReservedResource || "",
-        deliveryStatus: "pending"
-      };
-
-      const validatedData = insertCustomerLoadSchema.parse(loadData);
-      const load = await storage.createCustomerLoad(validatedData);
-      
-      res.status(201).json({
-        success: true,
-        message: "Customer load created successfully",
-        data: load
-      });
-    } catch (error) {
-      console.error("External API error:", error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ 
-          success: false,
-          message: "Invalid data format", 
-          errors: error.errors 
-        });
-      }
-      res.status(500).json({ 
-        success: false,
-        message: "Failed to create customer load" 
-      });
-    }
-  });
 
   // External API endpoint for updating delivery status
   app.put("/api/external/customer-loads/:id/status", async (req, res) => {
@@ -274,22 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // External API endpoint for retrieving loads
-  app.get("/api/external/customer-loads", async (req, res) => {
-    try {
-      res.header("Access-Control-Allow-Origin", "*");
-      const loads = await storage.getCustomerLoads();
-      res.json({
-        success: true,
-        data: loads
-      });
-    } catch (error) {
-      res.status(500).json({ 
-        success: false,
-        message: "Failed to fetch customer loads" 
-      });
-    }
-  });
+
 
   // Journey Milestones routes
   app.get("/api/journey-milestones/:customerLoadId", async (req, res) => {
@@ -407,6 +324,215 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false,
         message: "Failed to update notepad" 
+      });
+    }
+  });
+
+  // External API endpoint for retrieving all customer loads with journey milestones
+  app.get("/api/external/customer-loads", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      const customerLoads = await storage.getCustomerLoads();
+      
+      // Get journey milestones for each customer load
+      const loadsWithMilestones = await Promise.all(
+        customerLoads.map(async (load) => {
+          const milestones = await storage.getJourneyMilestones(load.id);
+          return {
+            ...load,
+            journeyMilestones: milestones
+          };
+        })
+      );
+      
+      res.json({
+        success: true,
+        data: loadsWithMilestones
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to fetch customer loads" 
+      });
+    }
+  });
+
+  // External API endpoint for retrieving a specific customer load with journey milestones
+  app.get("/api/external/customer-loads/:id", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid customer load ID"
+        });
+      }
+      
+      const customerLoad = await storage.getCustomerLoad(id);
+      if (!customerLoad) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer load not found"
+        });
+      }
+      
+      const milestones = await storage.getJourneyMilestones(id);
+      const loadWithMilestones = {
+        ...customerLoad,
+        journeyMilestones: milestones
+      };
+      
+      res.json({
+        success: true,
+        data: loadWithMilestones
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to fetch customer load" 
+      });
+    }
+  });
+
+  // External API endpoint for creating a new customer load with optional journey milestones
+  app.post("/api/external/customer-loads", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      
+      const { journeyMilestones, ...loadData } = req.body;
+      
+      // Validate customer load data
+      const validatedLoad = insertCustomerLoadSchema.parse(loadData);
+      
+      // Create the customer load
+      const newLoad = await storage.createCustomerLoad(validatedLoad);
+      
+      // Create journey milestones if provided
+      let createdMilestones: any[] = [];
+      if (journeyMilestones && Array.isArray(journeyMilestones)) {
+        createdMilestones = await Promise.all(
+          journeyMilestones.map(async (milestone: any) => {
+            const milestoneData = {
+              customerLoadId: newLoad.id,
+              sequenceNumber: milestone.sequence || milestone.sequenceNumber || 1,
+              startingPoint: milestone.startingPoint || "",
+              endingPoint: milestone.endingPoint || "",
+              startDate: milestone.startDate || "",
+              endDate: milestone.endDate || "",
+              startTime: milestone.startTime || "",
+              endTime: milestone.endTime || "",
+              breakTime: milestone.breakHours ? (milestone.breakHours * 60).toString() : undefined,
+              status: milestone.status || "pending",
+              notes: milestone.notes || undefined
+            };
+            const validatedMilestone = insertJourneyMilestoneSchema.parse(milestoneData);
+            return await storage.createJourneyMilestone(validatedMilestone);
+          })
+        );
+      }
+      
+      const loadWithMilestones = {
+        ...newLoad,
+        journeyMilestones: createdMilestones
+      };
+      
+      res.status(201).json({
+        success: true,
+        message: "Customer load created successfully",
+        data: loadWithMilestones
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation error",
+          errors: error.errors
+        });
+      }
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to create customer load" 
+      });
+    }
+  });
+
+  // External API endpoint for updating a customer load with optional journey milestones
+  app.put("/api/external/customer-loads/:id", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid customer load ID"
+        });
+      }
+      
+      const { journeyMilestones, ...loadData } = req.body;
+      
+      // Update customer load
+      const updatedLoad = await storage.updateCustomerLoad(id, loadData);
+      if (!updatedLoad) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer load not found"
+        });
+      }
+      
+      // Get current milestones
+      let currentMilestones = await storage.getJourneyMilestones(id);
+      
+      // If journey milestones are provided, replace them
+      if (journeyMilestones && Array.isArray(journeyMilestones)) {
+        // Delete existing milestones
+        await Promise.all(
+          currentMilestones.map(milestone => 
+            storage.deleteJourneyMilestone(milestone.id)
+          )
+        );
+        
+        // Create new milestones
+        currentMilestones = await Promise.all(
+          journeyMilestones.map(async (milestone: any) => {
+            const validatedMilestone = insertJourneyMilestoneSchema.parse({
+              ...milestone,
+              customerLoadId: id
+            });
+            return await storage.createJourneyMilestone(validatedMilestone);
+          })
+        );
+      }
+      
+      const loadWithMilestones = {
+        ...updatedLoad,
+        journeyMilestones: currentMilestones
+      };
+      
+      res.json({
+        success: true,
+        message: "Customer load updated successfully",
+        data: loadWithMilestones
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          success: false,
+          message: "Validation error",
+          errors: error.errors
+        });
+      }
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to update customer load" 
       });
     }
   });
