@@ -11,6 +11,11 @@ export const customerLoads = pgTable("customer_loads", {
   humanReservedResource: text("human_reserved_resource"),
   priority: text("priority").notNull(),
   remark: text("remark"),
+  createdAt: text("created_at").notNull(),
+  deliveryDate: text("delivery_date"),
+  startTime: text("start_time"),
+  endTime: text("end_time"),
+  deliveryStatus: text("delivery_status").notNull().default("pending"), // pending, in-progress, completed, cancelled
 });
 
 export const trucks = pgTable("trucks", {
@@ -28,6 +33,7 @@ export const notepad = pgTable("notepad", {
 
 export const insertCustomerLoadSchema = createInsertSchema(customerLoads).omit({
   id: true,
+  createdAt: true,
 });
 
 export const insertTruckSchema = createInsertSchema(trucks).omit({

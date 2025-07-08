@@ -36,7 +36,7 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private data: DataStore;
+  private data!: DataStore;
   private currentIds: { [key: string]: number };
 
   constructor() {
@@ -56,10 +56,10 @@ export class MemStorage implements IStorage {
         this.data = JSON.parse(fileContent);
         
         // Update current IDs to prevent conflicts
-        this.currentIds.users = Math.max(...this.data.users.map(u => u.id), 0) + 1;
-        this.currentIds.customerLoads = Math.max(...this.data.customerLoads.map(l => l.id), 0) + 1;
-        this.currentIds.trucks = Math.max(...this.data.trucks.map(t => t.id), 0) + 1;
-        this.currentIds.notepad = Math.max(...this.data.notepad.map(n => n.id), 0) + 1;
+        this.currentIds.users = this.data.users.length > 0 ? Math.max(...this.data.users.map(u => u.id)) + 1 : 1;
+        this.currentIds.customerLoads = this.data.customerLoads.length > 0 ? Math.max(...this.data.customerLoads.map(l => l.id)) + 1 : 1;
+        this.currentIds.trucks = this.data.trucks.length > 0 ? Math.max(...this.data.trucks.map(t => t.id)) + 1 : 1;
+        this.currentIds.notepad = this.data.notepad.length > 0 ? Math.max(...this.data.notepad.map(n => n.id)) + 1 : 1;
       } else {
         this.data = {
           customerLoads: [],
@@ -114,7 +114,19 @@ export class MemStorage implements IStorage {
 
   async createCustomerLoad(insertLoad: InsertCustomerLoad): Promise<CustomerLoad> {
     const id = this.currentIds.customerLoads++;
-    const load: CustomerLoad = { ...insertLoad, id };
+    const load: CustomerLoad = { 
+      ...insertLoad, 
+      id,
+      location: insertLoad.location || null,
+      algoAssignedResource: insertLoad.algoAssignedResource || null,
+      humanReservedResource: insertLoad.humanReservedResource || null,
+      remark: insertLoad.remark || null,
+      createdAt: new Date().toISOString(),
+      deliveryDate: insertLoad.deliveryDate || null,
+      startTime: insertLoad.startTime || null,
+      endTime: insertLoad.endTime || null,
+      deliveryStatus: insertLoad.deliveryStatus || "pending"
+    };
     this.data.customerLoads.push(load);
     this.saveData();
     return load;
@@ -148,7 +160,11 @@ export class MemStorage implements IStorage {
 
   async createTruck(insertTruck: InsertTruck): Promise<Truck> {
     const id = this.currentIds.trucks++;
-    const truck: Truck = { ...insertTruck, id };
+    const truck: Truck = { 
+      ...insertTruck, 
+      id,
+      assignedTo: insertTruck.assignedTo || null
+    };
     this.data.trucks.push(truck);
     this.saveData();
     return truck;

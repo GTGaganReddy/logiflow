@@ -162,6 +162,133 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API endpoint for GPT agent integration
+  app.post("/api/external/customer-loads", async (req, res) => {
+    try {
+      // Allow external requests from GPT agents
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      
+      const { customerName, location, priority, deliveryDate, startTime, endTime, remark, algoAssignedResource, humanReservedResource } = req.body;
+      
+      if (!customerName || !priority) {
+        return res.status(400).json({ 
+          message: "Customer name and priority are required",
+          example: {
+            customerName: "ABC Corp",
+            location: "New York",
+            priority: "High",
+            deliveryDate: "2025-07-10",
+            startTime: "09:00",
+            endTime: "17:00",
+            remark: "Urgent delivery",
+            algoAssignedResource: "TRK-001",
+            humanReservedResource: ""
+          }
+        });
+      }
+
+      // Get current loads to generate serial number
+      const loads = await storage.getCustomerLoads();
+      const slNo = String(loads.length + 1).padStart(3, '0');
+      
+      const loadData = {
+        slNo,
+        customerName,
+        location: location || "",
+        priority,
+        deliveryDate: deliveryDate || "",
+        startTime: startTime || "",
+        endTime: endTime || "",
+        remark: remark || "",
+        algoAssignedResource: algoAssignedResource || "",
+        humanReservedResource: humanReservedResource || "",
+        deliveryStatus: "pending"
+      };
+
+      const validatedData = insertCustomerLoadSchema.parse(loadData);
+      const load = await storage.createCustomerLoad(validatedData);
+      
+      res.status(201).json({
+        success: true,
+        message: "Customer load created successfully",
+        data: load
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Invalid data format", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to create customer load" 
+      });
+    }
+  });
+
+  // External API endpoint for updating delivery status
+  app.put("/api/external/customer-loads/:id/status", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      
+      const id = parseInt(req.params.id);
+      const { deliveryStatus, startTime, endTime } = req.body;
+      
+      if (!deliveryStatus || !["pending", "in-progress", "completed", "cancelled"].includes(deliveryStatus)) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Valid delivery status is required (pending, in-progress, completed, cancelled)" 
+        });
+      }
+
+      const updateData: any = { deliveryStatus };
+      if (startTime) updateData.startTime = startTime;
+      if (endTime) updateData.endTime = endTime;
+      
+      const load = await storage.updateCustomerLoad(id, updateData);
+      if (!load) {
+        return res.status(404).json({ 
+          success: false,
+          message: "Customer load not found" 
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: "Delivery status updated successfully",
+        data: load
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to update delivery status" 
+      });
+    }
+  });
+
+  // External API endpoint for retrieving loads
+  app.get("/api/external/customer-loads", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      const loads = await storage.getCustomerLoads();
+      res.json({
+        success: true,
+        data: loads
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to fetch customer loads" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

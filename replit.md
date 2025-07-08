@@ -95,4 +95,24 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 - **Future**: PostgreSQL database with Drizzle ORM migrations
 - **Migration Path**: Abstract storage interface allows seamless backend switching
 
+## Recent Changes
+
+### July 8, 2025
+- **Added Date/Time Tracking**: Enhanced customer load schema with delivery date, start/end times, and delivery status tracking
+- **Delivery Journey Tooltips**: Added hover functionality on resource badges to display delivery schedule and status information
+- **External API Integration**: Created dedicated API endpoints for GPT assistant integration at `/api/external/`
+- **Enhanced Form Fields**: Updated add customer modal with delivery date, time slots, and status selection
+- **Sample Data**: Added realistic sample customer loads to demonstrate functionality
+- **API Documentation**: Created comprehensive API documentation for external integrations
+
+### External API Endpoints Added:
+- `POST /api/external/customer-loads` - Create customer loads from external systems
+- `PUT /api/external/customer-loads/:id/status` - Update delivery status and times
+- `GET /api/external/customer-loads` - Retrieve all customer loads
+
+### Enhanced Data Model:
+- Added `createdAt`, `deliveryDate`, `startTime`, `endTime`, and `deliveryStatus` fields
+- Improved type safety with proper null handling
+- Added delivery status options: pending, in-progress, completed, cancelled
+
 The application is designed with scalability in mind, using a modular architecture that can easily transition from file-based storage to a full database system as requirements grow.

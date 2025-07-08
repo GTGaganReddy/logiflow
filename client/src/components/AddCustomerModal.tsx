@@ -24,6 +24,10 @@ interface AddCustomerModalProps {
 const formSchema = insertCustomerLoadSchema.extend({
   customerName: z.string().min(1, "Customer name is required"),
   priority: z.enum(["High", "Medium", "Low"]),
+  deliveryDate: z.string().optional(),
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  deliveryStatus: z.enum(["pending", "in-progress", "completed", "cancelled"]).optional(),
 });
 
 export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
@@ -39,6 +43,10 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
       humanReservedResource: "",
       priority: "Medium",
       remark: "",
+      deliveryDate: "",
+      startTime: "",
+      endTime: "",
+      deliveryStatus: "pending",
     },
   });
 
@@ -93,7 +101,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Customer Load</DialogTitle>
         </DialogHeader>
@@ -196,6 +204,74 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
                           {truck.plateNumber}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="deliveryDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Delivery Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="deliveryStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Delivery Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

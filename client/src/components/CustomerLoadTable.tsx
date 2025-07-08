@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download } from "lucide-react";
+import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CustomerLoad } from "@shared/schema";
 
 export default function CustomerLoadTable() {
@@ -58,9 +59,45 @@ export default function CustomerLoadTable() {
     }
   };
 
-  const getResourceBadge = (resource: string | null) => {
+  const getResourceBadge = (resource: string | null, load: CustomerLoad) => {
     if (!resource) return <Badge variant="secondary">-</Badge>;
-    return <Badge className="bg-success text-white">{resource}</Badge>;
+    
+    const deliveryInfo = (
+      <div className="space-y-1">
+        <div className="flex items-center space-x-2">
+          <Calendar className="h-3 w-3" />
+          <span className="text-xs">{load.deliveryDate ? new Date(load.deliveryDate).toLocaleDateString() : "Not set"}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Clock className="h-3 w-3" />
+          <span className="text-xs">
+            {load.startTime && load.endTime 
+              ? `${load.startTime} - ${load.endTime}`
+              : "Time not set"
+            }
+          </span>
+        </div>
+        <div className="text-xs">
+          Status: <span className="font-medium">{load.deliveryStatus}</span>
+        </div>
+      </div>
+    );
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-pointer">
+            <Badge className="bg-success text-white">{resource}</Badge>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="p-2">
+            <p className="font-medium mb-2">Delivery Journey</p>
+            {deliveryInfo}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   const getInitials = (name: string) => {
@@ -142,6 +179,8 @@ export default function CustomerLoadTable() {
                   <TableHead>Algo Assigned Resource</TableHead>
                   <TableHead>Human Reserved Resource</TableHead>
                   <TableHead>Priority</TableHead>
+                  <TableHead>Delivery Date</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Remark</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
@@ -149,7 +188,7 @@ export default function CustomerLoadTable() {
               <TableBody>
                 {filteredLoads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-neutral-500">
+                    <TableCell colSpan={9} className="text-center py-8 text-neutral-500">
                       No customer loads found. Add your first load to get started.
                     </TableCell>
                   </TableRow>
@@ -165,23 +204,50 @@ export default function CustomerLoadTable() {
                           <div>
                             <p className="text-sm font-medium text-neutral-900">{load.customerName}</p>
                             {load.location && <p className="text-xs text-neutral-500">{load.location}</p>}
+                            <p className="text-xs text-neutral-400">
+                              Created: {new Date(load.createdAt).toLocaleDateString()}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          {getResourceBadge(load.algoAssignedResource)}
+                          {getResourceBadge(load.algoAssignedResource, load)}
                           {load.algoAssignedResource && <Truck className="h-4 w-4 text-success" />}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          {getResourceBadge(load.humanReservedResource)}
+                          {getResourceBadge(load.humanReservedResource, load)}
                           {load.humanReservedResource && <Truck className="h-4 w-4 text-primary" />}
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge className={getPriorityColor(load.priority)}>{load.priority}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          {load.deliveryDate ? (
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-3 w-3 text-neutral-500" />
+                              <span>{new Date(load.deliveryDate).toLocaleDateString()}</span>
+                            </div>
+                          ) : (
+                            <span className="text-neutral-400">Not set</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={
+                            load.deliveryStatus === "completed" ? "bg-success text-white" :
+                            load.deliveryStatus === "in-progress" ? "bg-warning text-white" :
+                            load.deliveryStatus === "cancelled" ? "bg-error text-white" :
+                            "bg-neutral-400 text-white"
+                          }
+                        >
+                          {load.deliveryStatus}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-neutral-600">{load.remark || "-"}</TableCell>
                       <TableCell>

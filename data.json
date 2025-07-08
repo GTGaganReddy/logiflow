@@ -1,5 +1,51 @@
 {
-  "customerLoads": [],
+  "customerLoads": [
+    {
+      "id": 1,
+      "slNo": "001",
+      "customerName": "Global Logistics Corp",
+      "location": "New York, NY",
+      "algoAssignedResource": "TRK-001",
+      "humanReservedResource": null,
+      "priority": "High",
+      "remark": "Urgent delivery for international client",
+      "createdAt": "2025-07-08T10:30:00.000Z",
+      "deliveryDate": "2025-07-09",
+      "startTime": "08:00",
+      "endTime": "18:00",
+      "deliveryStatus": "in-progress"
+    },
+    {
+      "id": 2,
+      "slNo": "002",
+      "customerName": "Metro Supply Chain",
+      "location": "Chicago, IL",
+      "algoAssignedResource": null,
+      "humanReservedResource": "TRK-005",
+      "priority": "Medium",
+      "remark": "Regular weekly delivery",
+      "createdAt": "2025-07-08T14:15:00.000Z",
+      "deliveryDate": "2025-07-10",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "deliveryStatus": "pending"
+    },
+    {
+      "id": 3,
+      "slNo": "003",
+      "customerName": "FastTrack Distributors",
+      "location": "Los Angeles, CA",
+      "algoAssignedResource": "TRK-008",
+      "humanReservedResource": null,
+      "priority": "Low",
+      "remark": "Standard delivery schedule",
+      "createdAt": "2025-07-08T16:45:00.000Z",
+      "deliveryDate": "2025-07-11",
+      "startTime": "10:00",
+      "endTime": "16:00",
+      "deliveryStatus": "pending"
+    }
+  ],
   "trucks": [
     {
       "id": 1,
@@ -32,6 +78,12 @@
       "assignedTo": null
     }
   ],
-  "notepad": [],
+  "notepad": [
+    {
+      "id": 1,
+      "content": "",
+      "updatedAt": "2025-07-08T20:06:43.867Z"
+    }
+  ],
   "users": []
 }
