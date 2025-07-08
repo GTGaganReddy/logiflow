@@ -4,13 +4,13 @@
       "slNo": "EXT-1752014658639",
       "customerName": "Updated Customer Name",
       "algoAssignedResource": "W-792XY",
-      "priority": "high",
+      "priority": "low",
       "deliveryStartDate": "2025-04-14",
       "deliveryStartTime": "11:36",
       "id": 3,
       "location": null,
       "humanReservedResource": null,
-      "remark": "Updated via PUT request",
+      "remark": "Updated using customer name identifier",
       "createdAt": "2025-07-08T22:44:18.640Z",
       "deliveryEndDate": null,
       "deliveryEndTime": null,
@@ -467,16 +467,16 @@
     {
       "customerLoadId": 3,
       "sequenceNumber": 1,
-      "startingPoint": "Updated Start Point",
-      "endingPoint": "Updated End Point",
-      "startDate": "2025-07-15",
-      "startTime": "10:00",
-      "endDate": "2025-07-15",
-      "endTime": "18:00",
-      "breakTime": "90",
+      "startingPoint": "Customer Name Based Start",
+      "endingPoint": "Customer Name Based End",
+      "startDate": "2025-07-20",
+      "startTime": "08:00",
+      "endDate": "2025-07-20",
+      "endTime": "20:00",
+      "breakTime": "120",
       "status": "pending",
       "notes": null,
-      "id": 30
+      "id": 31
     }
   ]
 }

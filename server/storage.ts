@@ -20,6 +20,7 @@ export interface IStorage {
   // Customer Loads
   getCustomerLoads(): Promise<CustomerLoad[]>;
   getCustomerLoad(id: number): Promise<CustomerLoad | undefined>;
+  getCustomerLoadByName(customerName: string): Promise<CustomerLoad | undefined>;
   createCustomerLoad(load: InsertCustomerLoad): Promise<CustomerLoad>;
   updateCustomerLoad(id: number, load: Partial<InsertCustomerLoad>): Promise<CustomerLoad | undefined>;
   deleteCustomerLoad(id: number): Promise<boolean>;
@@ -124,6 +125,10 @@ export class MemStorage implements IStorage {
 
   async getCustomerLoad(id: number): Promise<CustomerLoad | undefined> {
     return this.data.customerLoads.find(load => load.id === id);
+  }
+
+  async getCustomerLoadByName(customerName: string): Promise<CustomerLoad | undefined> {
+    return this.data.customerLoads.find(load => load.customerName === customerName);
   }
 
   async createCustomerLoad(insertLoad: InsertCustomerLoad): Promise<CustomerLoad> {

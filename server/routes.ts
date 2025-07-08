@@ -358,28 +358,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // External API endpoint for retrieving a specific customer load with journey milestones
-  app.get("/api/external/customer-loads/:id", async (req, res) => {
+  // External API endpoint for retrieving a specific customer load with journey milestones (by customer name)
+  app.get("/api/external/customer-loads/:customerName", async (req, res) => {
     try {
       res.header("Access-Control-Allow-Origin", "*");
-      const id = parseInt(req.params.id);
+      const customerName = decodeURIComponent(req.params.customerName);
       
-      if (isNaN(id)) {
+      if (!customerName) {
         return res.status(400).json({
           success: false,
-          message: "Invalid customer load ID"
+          message: "Customer name is required"
         });
       }
       
-      const customerLoad = await storage.getCustomerLoad(id);
+      const customerLoad = await storage.getCustomerLoadByName(customerName);
       if (!customerLoad) {
         return res.status(404).json({
           success: false,
-          message: "Customer load not found"
+          message: `Customer load not found for customer: ${customerName}`
         });
       }
       
-      const milestones = await storage.getJourneyMilestones(id);
+      const milestones = await storage.getJourneyMilestones(customerLoad.id);
       const loadWithMilestones = {
         ...customerLoad,
         journeyMilestones: milestones
@@ -479,33 +479,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // External API endpoint for updating a customer load with optional journey milestones
-  app.put("/api/external/customer-loads/:id", async (req, res) => {
+  // External API endpoint for updating a customer load with optional journey milestones (by customer name)
+  app.put("/api/external/customer-loads/:customerName", async (req, res) => {
     try {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Content-Type");
       
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
+      const customerName = decodeURIComponent(req.params.customerName);
+      if (!customerName) {
         return res.status(400).json({
           success: false,
-          message: "Invalid customer load ID"
+          message: "Customer name is required"
+        });
+      }
+      
+      // Find existing customer load by name
+      const existingLoad = await storage.getCustomerLoadByName(customerName);
+      if (!existingLoad) {
+        return res.status(404).json({
+          success: false,
+          message: `Customer load not found for customer: ${customerName}`
         });
       }
       
       const { journeyMilestones, ...loadData } = req.body;
       
       // Update customer load
-      const updatedLoad = await storage.updateCustomerLoad(id, loadData);
+      const updatedLoad = await storage.updateCustomerLoad(existingLoad.id, loadData);
       if (!updatedLoad) {
         return res.status(404).json({
           success: false,
-          message: "Customer load not found"
+          message: "Failed to update customer load"
         });
       }
       
       // Get current milestones
-      let currentMilestones = await storage.getJourneyMilestones(id);
+      let currentMilestones = await storage.getJourneyMilestones(existingLoad.id);
       
       // If journey milestones are provided, replace them
       if (journeyMilestones && Array.isArray(journeyMilestones)) {
@@ -528,7 +537,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
             
             const milestoneData = {
-              customerLoadId: id,
+              customerLoadId: existingLoad.id,
               sequenceNumber: milestone.sequence || milestone.sequenceNumber || 1,
               startingPoint: cleanValue(milestone.startingPoint),
               endingPoint: cleanValue(milestone.endingPoint),

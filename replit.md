@@ -97,6 +97,13 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
+### July 8, 2025 - Customer Name-Based API Identifiers
+- **Customer Name API Access**: Updated external API endpoints to use customer name as identifier instead of database ID
+- **URL Encoding Support**: Added proper URL decoding for customer names with special characters or spaces
+- **Enhanced Storage Interface**: Added `getCustomerLoadByName()` method for name-based record retrieval
+- **Backward Compatible Design**: Maintains same API structure while changing identifier approach
+- **Natural Integration**: Enables more intuitive API usage where customer name is the primary business identifier
+
 ### July 8, 2025 - Consolidated External API Implementation
 - **Consolidated External API**: Implemented single-endpoint API that combines customer loads with journey milestones in unified responses
 - **External API Endpoints**: Created comprehensive external API with `/api/external/customer-loads` supporting GET, POST, PUT operations
@@ -114,9 +121,9 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ### External API Endpoints:
 - `GET /api/external/customer-loads` - Get all loads with milestones
-- `GET /api/external/customer-loads/:id` - Get specific load with milestones
+- `GET /api/external/customer-loads/:customerName` - Get specific load with milestones (by customer name)
 - `POST /api/external/customer-loads` - Create load with optional milestones
-- `PUT /api/external/customer-loads/:id` - Update load with optional milestone replacement
+- `PUT /api/external/customer-loads/:customerName` - Update load with optional milestone replacement (by customer name)
 - `GET /api/external/notepad` - Get notepad content
 - `PUT /api/external/notepad` - Update notepad content
 
