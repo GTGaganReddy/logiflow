@@ -115,6 +115,125 @@ Retrieves all customer loads from the dashboard.
 }
 ```
 
+### 4. Create Journey Milestone
+**POST** `/api/external/journey-milestones`
+
+Creates a new journey milestone for tracking progress during delivery.
+
+**Request Body:**
+```json
+{
+  "customerLoadId": 1,
+  "sequence": 1,
+  "location": "Warehouse A",
+  "description": "Pickup completed",
+  "expectedTime": "09:00",
+  "actualTime": "09:15",
+  "status": "completed",
+  "isBreakTime": false,
+  "breakDurationMinutes": 0
+}
+```
+
+**Required Fields:**
+- `customerLoadId` (number): ID of the customer load
+- `sequence` (number): Order sequence of the milestone
+- `location` (string): Location of the milestone
+
+**Optional Fields:**
+- `description` (string): Description of the milestone
+- `expectedTime` (string): Expected time in HH:MM format
+- `actualTime` (string): Actual time in HH:MM format
+- `status` (string): Must be "pending", "in-progress", "completed", or "delayed"
+- `isBreakTime` (boolean): Whether this is a break milestone
+- `breakDurationMinutes` (number): Duration of break in minutes
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Journey milestone created successfully",
+  "data": {
+    "id": 1,
+    "customerLoadId": 1,
+    "sequence": 1,
+    "location": "Warehouse A",
+    "description": "Pickup completed",
+    "expectedTime": "09:00",
+    "actualTime": "09:15",
+    "status": "completed",
+    "isBreakTime": false,
+    "breakDurationMinutes": 0,
+    "createdAt": "2025-07-08T20:11:30.000Z"
+  }
+}
+```
+
+### 5. Get Journey Milestones for Load
+**GET** `/api/external/journey-milestones/:customerLoadId`
+
+Retrieves all journey milestones for a specific customer load.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "customerLoadId": 1,
+      "sequence": 1,
+      "location": "Warehouse A",
+      "description": "Pickup completed",
+      "expectedTime": "09:00",
+      "actualTime": "09:15",
+      "status": "completed",
+      "isBreakTime": false,
+      "breakDurationMinutes": 0,
+      "createdAt": "2025-07-08T20:11:30.000Z"
+    }
+  ]
+}
+```
+
+### 6. Update Journey Milestone
+**PUT** `/api/external/journey-milestones/:id`
+
+Updates a specific journey milestone.
+
+**Request Body:**
+```json
+{
+  "actualTime": "09:20",
+  "status": "completed",
+  "description": "Pickup completed with minor delay"
+}
+```
+
+**Optional Fields:**
+- All fields from create milestone except `customerLoadId` and `sequence`
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Journey milestone updated successfully",
+  "data": {
+    "id": 1,
+    "customerLoadId": 1,
+    "sequence": 1,
+    "location": "Warehouse A",
+    "description": "Pickup completed with minor delay",
+    "expectedTime": "09:00",
+    "actualTime": "09:20",
+    "status": "completed",
+    "isBreakTime": false,
+    "breakDurationMinutes": 0,
+    "createdAt": "2025-07-08T20:11:30.000Z"
+  }
+}
+```
+
 ## Example Usage for GPT Assistant Actions
 
 ### Action 1: Add Customer Load
@@ -158,6 +277,47 @@ Retrieves all customer loads from the dashboard.
 }
 ```
 
+### Action 3: Create Journey Milestone
+```json
+{
+  "name": "create_journey_milestone",
+  "description": "Create a new journey milestone for tracking delivery progress",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "customerLoadId": {"type": "integer", "description": "Customer load ID"},
+      "sequence": {"type": "integer", "description": "Order sequence of milestone"},
+      "location": {"type": "string", "description": "Milestone location"},
+      "description": {"type": "string", "description": "Milestone description"},
+      "expectedTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
+      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
+      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"]},
+      "isBreakTime": {"type": "boolean", "description": "Whether this is a break milestone"},
+      "breakDurationMinutes": {"type": "integer", "description": "Break duration in minutes"}
+    },
+    "required": ["customerLoadId", "sequence", "location"]
+  }
+}
+```
+
+### Action 4: Update Journey Milestone
+```json
+{
+  "name": "update_journey_milestone",
+  "description": "Update an existing journey milestone",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "id": {"type": "integer", "description": "Milestone ID"},
+      "actualTime": {"type": "string", "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"},
+      "status": {"type": "string", "enum": ["pending", "in-progress", "completed", "delayed"]},
+      "description": {"type": "string", "description": "Updated description"}
+    },
+    "required": ["id"]
+  }
+}
+```
+
 ## Natural Language Processing Examples
 
 Your GPT assistant can process natural language input like:
@@ -167,6 +327,10 @@ Your GPT assistant can process natural language input like:
 - "Reserve TRK-008 for urgent delivery tomorrow"
 - "Mark load 3 as completed at 4:30 PM"
 - "Set delivery date for ABC Corp to July 15th"
+- "Add pickup milestone at Warehouse A for load 1 at 9:00 AM"
+- "Update milestone 3 status to completed with actual time 2:15 PM"
+- "Create break milestone for load 2 with 30 minutes duration"
+- "Mark delivery milestone as delayed with actual time 6:30 PM"
 
 The assistant should parse these commands and make the appropriate API calls to update the dashboard.
 
