@@ -1,15 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { JourneyMilestone } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MapPin, Clock, Coffee, CheckCircle, Circle, XCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { MapPin, Clock, Coffee, CheckCircle, Circle, XCircle, Edit2, Save, X } from "lucide-react";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface JourneyMilestonesProps {
   customerLoadId: number;
 }
 
 export default function JourneyMilestones({ customerLoadId }: JourneyMilestonesProps) {
+  const [editingNote, setEditingNote] = useState<number | null>(null);
+  const [noteValue, setNoteValue] = useState("");
+  const { toast } = useToast();
+
   const { data: milestones = [], isLoading, error } = useQuery<JourneyMilestone[]>({
     queryKey: ["/api/journey-milestones", customerLoadId],
     queryFn: async () => {
@@ -20,6 +29,42 @@ export default function JourneyMilestones({ customerLoadId }: JourneyMilestonesP
       return response.json();
     },
   });
+
+  const updateNoteMutation = useMutation({
+    mutationFn: async ({ id, notes }: { id: number; notes: string }) => {
+      await apiRequest("PUT", `/api/journey-milestones/${id}`, { notes });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/journey-milestones", customerLoadId] });
+      setEditingNote(null);
+      setNoteValue("");
+      toast({
+        title: "Success",
+        description: "Milestone note updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update milestone note",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const startEditing = (milestoneId: number, currentNote: string | null) => {
+    setEditingNote(milestoneId);
+    setNoteValue(currentNote || "");
+  };
+
+  const saveNote = (milestoneId: number) => {
+    updateNoteMutation.mutate({ id: milestoneId, notes: noteValue.trim() });
+  };
+
+  const cancelEditing = () => {
+    setEditingNote(null);
+    setNoteValue("");
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -174,9 +219,55 @@ export default function JourneyMilestones({ customerLoadId }: JourneyMilestonesP
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm text-gray-600 max-w-xs">
-                      {milestone.notes || "No notes"}
-                    </div>
+                    {editingNote === milestone.id ? (
+                      <div className="flex items-center gap-2 max-w-xs">
+                        <Input
+                          value={noteValue}
+                          onChange={(e) => setNoteValue(e.target.value)}
+                          placeholder="Add a note..."
+                          className="text-sm"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              saveNote(milestone.id);
+                            } else if (e.key === "Escape") {
+                              cancelEditing();
+                            }
+                          }}
+                          autoFocus
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => saveNote(milestone.id)}
+                          disabled={updateNoteMutation.isPending}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Save className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={cancelEditing}
+                          className="h-8 w-8 p-0"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group max-w-xs">
+                        <div className="text-sm text-gray-600 flex-1">
+                          {milestone.notes || "No notes"}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => startEditing(milestone.id, milestone.notes)}
+                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
