@@ -104,6 +104,7 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 - **Enhanced Storage Interface**: Added `getCustomerLoadByName()` method for name-based record retrieval
 - **Date Display Fix**: Resolved timezone parsing issues causing incorrect month displays in dashboard components
 - **API Documentation Cleanup**: Removed duplicate documentation file and updated with milestone notes endpoints
+- **Upsert Behavior**: POST requests now automatically update existing customer loads with same name instead of creating duplicates
 
 ### July 8, 2025 - Consolidated External API Implementation
 - **Consolidated External API**: Implemented single-endpoint API that combines customer loads with journey milestones in unified responses

@@ -108,10 +108,10 @@ Retrieves a specific customer load including its journey milestones.
 }
 ```
 
-#### 3. Create Customer Load with Optional Journey Milestones
+#### 3. Create or Update Customer Load with Optional Journey Milestones
 **POST** `/api/external/customer-loads`
 
-Creates a new customer load with optional journey milestones in a single request.
+Creates a new customer load or updates an existing one (by customer name) with optional journey milestones in a single request. If a customer load with the same `customerName` already exists, it will be updated instead of creating a duplicate.
 
 **Request Body:**
 ```json
@@ -174,7 +174,7 @@ Creates a new customer load with optional journey milestones in a single request
 ```json
 {
   "success": true,
-  "message": "Customer load created successfully",
+  "message": "Customer load created successfully", // or "Customer load updated successfully" if updating
   "data": {
     "id": 4,
     "slNo": "004",
@@ -403,10 +403,12 @@ Retrieves all journey milestones for a specific customer load.
 ## Key Features
 
 1. **Customer Name-Based Access**: External API uses customer names as identifiers instead of database IDs
-2. **Consolidated Data**: Customer loads and journey milestones are returned together in single API calls
-3. **Flexible Fields**: Most fields are optional except `customerName`
-4. **Journey Milestone Support**: 1-3 journey milestones can be created/updated with each customer load
-5. **Inline Notes Editing**: Dashboard provides real-time editing of milestone notes with hover-to-edit functionality
-6. **Consistent Response Format**: All external APIs return `{success: true/false, data: ...}` format
-7. **URL Encoding Support**: Customer names with special characters are properly handled via URL encoding
+2. **Upsert Behavior**: POST requests automatically update existing customer loads with same name instead of creating duplicates
+3. **Consolidated Data**: Customer loads and journey milestones are returned together in single API calls
+4. **Flexible Fields**: Most fields are optional except `customerName`
+5. **Journey Milestone Support**: 1-3 journey milestones can be created/updated with each customer load
+6. **Milestone Replacement**: When updating, new milestones completely replace existing ones for that customer load
+7. **Inline Notes Editing**: Dashboard provides real-time editing of milestone notes with hover-to-edit functionality
+8. **Consistent Response Format**: All external APIs return `{success: true/false, data: ...}` format
+9. **URL Encoding Support**: Customer names with special characters are properly handled via URL encoding
 5. **CORS Enabled**: All external endpoints include proper CORS headers for cross-origin access

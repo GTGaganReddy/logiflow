@@ -398,7 +398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // External API endpoint for creating a new customer load with optional journey milestones
+  // External API endpoint for creating or updating a customer load with optional journey milestones
   app.post("/api/external/customer-loads", async (req, res) => {
     try {
       res.header("Access-Control-Allow-Origin", "*");
@@ -406,24 +406,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { journeyMilestones, ...loadData } = req.body;
       
-      // Auto-generate slNo if not provided
-      if (!loadData.slNo) {
-        const timestamp = Date.now();
-        loadData.slNo = `EXT-${timestamp}`;
+      // Check if a customer load with the same name already exists
+      const existingLoad = await storage.getCustomerLoadByName(loadData.customerName);
+      
+      let customerLoad;
+      let isUpdate = false;
+      
+      if (existingLoad) {
+        // Update existing customer load
+        isUpdate = true;
+        
+        // Preserve original slNo and createdAt, but allow other fields to be updated
+        const updateData = {
+          ...loadData,
+          // Don't override these fields when updating
+          slNo: existingLoad.slNo,
+          createdAt: existingLoad.createdAt
+        };
+        
+        const validatedUpdateData = insertCustomerLoadSchema.parse(updateData);
+        customerLoad = await storage.updateCustomerLoad(existingLoad.id, validatedUpdateData);
+        
+        if (!customerLoad) {
+          throw new Error("Failed to update existing customer load");
+        }
+      } else {
+        // Create new customer load
+        // Auto-generate slNo if not provided
+        if (!loadData.slNo) {
+          const timestamp = Date.now();
+          loadData.slNo = `EXT-${timestamp}`;
+        }
+        
+        // Add createdAt timestamp
+        loadData.createdAt = new Date().toISOString();
+        
+        // Validate customer load data using the standard schema (now with slNo populated)
+        const validatedLoad = insertCustomerLoadSchema.parse(loadData);
+        customerLoad = await storage.createCustomerLoad(validatedLoad);
       }
       
-      // Add createdAt timestamp
-      loadData.createdAt = new Date().toISOString();
-      
-      // Validate customer load data using the standard schema (now with slNo populated)
-      const validatedLoad = insertCustomerLoadSchema.parse(loadData);
-      
-      // Create the customer load
-      const newLoad = await storage.createCustomerLoad(validatedLoad);
-      
-      // Create journey milestones if provided
+      // Handle journey milestones replacement
       let createdMilestones: any[] = [];
       if (journeyMilestones && Array.isArray(journeyMilestones)) {
+        // If updating an existing load, delete all existing milestones first
+        if (isUpdate) {
+          const existingMilestones = await storage.getJourneyMilestones(customerLoad.id);
+          await Promise.all(
+            existingMilestones.map(milestone => storage.deleteJourneyMilestone(milestone.id))
+          );
+        }
+        
+        // Create new milestones
         createdMilestones = await Promise.all(
           journeyMilestones.map(async (milestone: any) => {
             // Helper function to handle "undefined" string values
@@ -435,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
             
             const milestoneData = {
-              customerLoadId: newLoad.id,
+              customerLoadId: customerLoad.id,
               sequenceNumber: milestone.sequence || milestone.sequenceNumber || 1,
               startingPoint: cleanValue(milestone.startingPoint),
               endingPoint: cleanValue(milestone.endingPoint),
@@ -454,13 +488,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const loadWithMilestones = {
-        ...newLoad,
+        ...customerLoad,
         journeyMilestones: createdMilestones
       };
       
-      res.status(201).json({
+      res.status(isUpdate ? 200 : 201).json({
         success: true,
-        message: "Customer load created successfully",
+        message: isUpdate ? "Customer load updated successfully" : "Customer load created successfully",
         data: loadWithMilestones
       });
     } catch (error) {
@@ -474,7 +508,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.status(500).json({ 
         success: false,
-        message: "Failed to create customer load" 
+        message: "Failed to create/update customer load" 
       });
     }
   });
