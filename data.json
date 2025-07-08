@@ -1,0 +1,37 @@
+{
+  "customerLoads": [],
+  "trucks": [
+    {
+      "id": 1,
+      "plateNumber": "TRK-001",
+      "status": "available",
+      "assignedTo": null
+    },
+    {
+      "id": 2,
+      "plateNumber": "TRK-007",
+      "status": "busy",
+      "assignedTo": "Global Logistics"
+    },
+    {
+      "id": 3,
+      "plateNumber": "TRK-012",
+      "status": "maintenance",
+      "assignedTo": null
+    },
+    {
+      "id": 4,
+      "plateNumber": "TRK-005",
+      "status": "available",
+      "assignedTo": null
+    },
+    {
+      "id": 5,
+      "plateNumber": "TRK-008",
+      "status": "available",
+      "assignedTo": null
+    }
+  ],
+  "notepad": [],
+  "users": []
+}
