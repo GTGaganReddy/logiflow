@@ -97,12 +97,13 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
-### July 8, 2025 - Customer Name-Based API Identifiers
+### July 8, 2025 - Milestone Notes & Customer Name-Based API
+- **Inline Notes Editing**: Added real-time editing capability for journey milestone notes with hover-to-edit interface
 - **Customer Name API Access**: Updated external API endpoints to use customer name as identifier instead of database ID
 - **URL Encoding Support**: Added proper URL decoding for customer names with special characters or spaces
 - **Enhanced Storage Interface**: Added `getCustomerLoadByName()` method for name-based record retrieval
-- **Backward Compatible Design**: Maintains same API structure while changing identifier approach
-- **Natural Integration**: Enables more intuitive API usage where customer name is the primary business identifier
+- **Date Display Fix**: Resolved timezone parsing issues causing incorrect month displays in dashboard components
+- **API Documentation Cleanup**: Removed duplicate documentation file and updated with milestone notes endpoints
 
 ### July 8, 2025 - Consolidated External API Implementation
 - **Consolidated External API**: Implemented single-endpoint API that combines customer loads with journey milestones in unified responses

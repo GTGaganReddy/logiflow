@@ -327,10 +327,78 @@ For validation errors, additional error details may be included:
 }
 ```
 
+## Internal API Endpoints (Dashboard Features)
+
+### Journey Milestone Notes Management
+
+#### Update Journey Milestone Notes
+**PUT** `/api/journey-milestones/:id`
+
+Updates a specific journey milestone, commonly used for adding/editing notes.
+
+**Parameters:**
+- `id` (integer): The journey milestone ID
+
+**Request Body:**
+```json
+{
+  "notes": "Driver reported traffic delay on A1 highway. Adjusted arrival time."
+}
+```
+
+**Response:**
+```json
+{
+  "customerLoadId": 31,
+  "sequenceNumber": 1,
+  "startingPoint": "St. Pölten",
+  "endingPoint": "Krems",
+  "startDate": "2025-07-20",
+  "startTime": "07:25",
+  "endDate": "2025-07-20",
+  "endTime": "10:00",
+  "breakTime": null,
+  "status": "pending",
+  "notes": "Driver reported traffic delay on A1 highway. Adjusted arrival time.",
+  "id": 83
+}
+```
+
+#### Get Journey Milestones for Customer Load
+**GET** `/api/journey-milestones/:customerLoadId`
+
+Retrieves all journey milestones for a specific customer load.
+
+**Parameters:**
+- `customerLoadId` (integer): The customer load ID
+
+**Response:**
+```json
+[
+  {
+    "customerLoadId": 31,
+    "sequenceNumber": 1,
+    "startingPoint": "St. Pölten",
+    "endingPoint": "Krems",
+    "startDate": "2025-07-20",
+    "startTime": "07:25",
+    "endDate": "2025-07-20",
+    "endTime": "10:00",
+    "breakTime": null,
+    "status": "pending",
+    "notes": "Driver reported traffic delay",
+    "id": 83
+  }
+]
+```
+
 ## Key Features
 
-1. **Consolidated Data**: Customer loads and journey milestones are returned together in a single API call
-2. **Flexible Fields**: Most fields are optional except `customerName`
-3. **Journey Milestone Support**: 1-3 journey milestones can be created/updated with each customer load
-4. **Consistent Response Format**: All external APIs return `{success: true/false, data: ...}` format
+1. **Customer Name-Based Access**: External API uses customer names as identifiers instead of database IDs
+2. **Consolidated Data**: Customer loads and journey milestones are returned together in single API calls
+3. **Flexible Fields**: Most fields are optional except `customerName`
+4. **Journey Milestone Support**: 1-3 journey milestones can be created/updated with each customer load
+5. **Inline Notes Editing**: Dashboard provides real-time editing of milestone notes with hover-to-edit functionality
+6. **Consistent Response Format**: All external APIs return `{success: true/false, data: ...}` format
+7. **URL Encoding Support**: Customer names with special characters are properly handled via URL encoding
 5. **CORS Enabled**: All external endpoints include proper CORS headers for cross-origin access
