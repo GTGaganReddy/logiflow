@@ -62,15 +62,15 @@ export default function CustomerLoadTable() {
   const filteredLoads = loads.filter((load) => {
     const matchesSearch = load.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          load.location?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPriority = priorityFilter === "all" || load.priority === priorityFilter;
+    const matchesPriority = priorityFilter === "all" || load.priority?.toLowerCase() === priorityFilter.toLowerCase();
     return matchesSearch && matchesPriority;
   });
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "High": return "bg-error text-white";
-      case "Medium": return "bg-warning text-white";
-      case "Low": return "bg-neutral-400 text-white";
+    switch (priority?.toLowerCase()) {
+      case "high": return "bg-red-500 text-white";
+      case "medium": return "bg-yellow-500 text-white";
+      case "low": return "bg-green-500 text-white";
       default: return "bg-neutral-200 text-neutral-700";
     }
   };
@@ -159,9 +159,9 @@ export default function CustomerLoadTable() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Priorities</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="Low">Low</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -255,7 +255,9 @@ export default function CustomerLoadTable() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getPriorityColor(load.priority)}>{load.priority}</Badge>
+                        <Badge className={getPriorityColor(load.priority)}>
+                          {load.priority?.charAt(0).toUpperCase() + load.priority?.slice(1).toLowerCase()}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
