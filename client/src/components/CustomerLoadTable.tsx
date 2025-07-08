@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight } from "lucide-react";
+import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight, Check } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +54,36 @@ export default function CustomerLoadTable() {
       toast({
         title: "Error",
         description: "Failed to delete customer load",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const acceptMutation = useMutation({
+    mutationFn: async (load: CustomerLoad) => {
+      // Only proceed if human resource is assigned
+      if (!load.humanReservedResource) {
+        throw new Error("Cannot accept assignment without human reserved resource");
+      }
+      
+      // Update the customer load to remove algo assigned resource
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
+        algoAssignedResource: null,
+        // Keep human reserved resource as is
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      toast({
+        title: "Success",
+        description: "Assignment accepted - Algorithm resource cleared",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to accept assignment",
         variant: "destructive",
       });
     },
@@ -286,6 +316,25 @@ export default function CustomerLoadTable() {
                       <TableCell className="text-sm text-neutral-600">{load.remark || "-"}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
+                          {/* Accept button - only show if human resource is assigned */}
+                          {load.humanReservedResource && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="p-1 text-success hover:bg-success hover:text-white"
+                                  onClick={() => acceptMutation.mutate(load)}
+                                  disabled={acceptMutation.isPending}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Accept human assignment and clear algorithm resource</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
