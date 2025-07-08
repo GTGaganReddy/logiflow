@@ -23,13 +23,13 @@ interface AddCustomerModalProps {
 
 const formSchema = insertCustomerLoadSchema.extend({
   customerName: z.string().min(1, "Customer name is required"),
-  priority: z.enum(["High", "Medium", "Low"]),
+  priority: z.enum(["high", "medium", "low"]),
   deliveryStartDate: z.string().optional(),
   deliveryEndDate: z.string().optional(),
   deliveryStartTime: z.string().optional(),
   deliveryEndTime: z.string().optional(),
   deliveryStatus: z.enum(["pending", "in-progress", "completed", "cancelled"]).optional(),
-});
+}).omit({ slNo: true });
 
 export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalProps) {
   const { toast } = useToast();
@@ -37,12 +37,11 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      slNo: "",
       customerName: "",
       location: "",
       algoAssignedResource: "",
       humanReservedResource: "",
-      priority: "Medium",
+      priority: "medium",
       remark: "",
       deliveryStartDate: "",
       deliveryEndDate: "",
@@ -85,12 +84,10 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    // Auto-generate serial number
-    const slNo = String(loads.length + 1).padStart(3, '0');
-    
     const loadData: InsertCustomerLoad = {
       ...data,
-      slNo,
+      slNo: `LOAD-${Date.now()}`, // Auto-generate unique slNo
+      createdAt: new Date().toISOString(),
       // If truck assignment is set to "auto-assign" or "none", clear the field
       algoAssignedResource: data.algoAssignedResource === "auto-assign" ? "" : data.algoAssignedResource,
       humanReservedResource: data.humanReservedResource === "auto-assign" || data.humanReservedResource === "none" ? "" : data.humanReservedResource,
@@ -151,9 +148,9 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="High">High</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

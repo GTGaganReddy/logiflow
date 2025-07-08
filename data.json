@@ -63,6 +63,22 @@
       "deliveryEndDate": null,
       "deliveryEndTime": null,
       "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "DASHBOARD-TEST-001",
+      "customerName": "Dashboard Test Customer",
+      "location": "Test Location",
+      "algoAssignedResource": "TRK-001",
+      "priority": "high",
+      "remark": "Testing serial number display",
+      "id": 7,
+      "humanReservedResource": null,
+      "createdAt": "2025-07-08T22:50:29.657Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
     }
   ],
   "trucks": [

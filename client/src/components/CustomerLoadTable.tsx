@@ -227,7 +227,7 @@ export default function CustomerLoadTable() {
                             )}
                           </Button>
                         </TableCell>
-                        <TableCell>{load.slNo}</TableCell>
+                        <TableCell>{filteredLoads.indexOf(load) + 1}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
