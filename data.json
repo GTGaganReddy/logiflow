@@ -84,8 +84,8 @@
   "notepad": [
     {
       "id": 1,
-      "content": "Hello testing. ",
-      "updatedAt": "2025-07-08T20:18:46.817Z"
+      "content": "Updated test content from external API",
+      "updatedAt": "2025-07-08T21:22:57.719Z"
     }
   ],
   "users": [],

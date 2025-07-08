@@ -365,6 +365,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API endpoint for retrieving notepad
+  app.get("/api/external/notepad", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      const notepad = await storage.getNotepad();
+      res.json({
+        success: true,
+        data: notepad || { content: "", updatedAt: new Date().toISOString() }
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to fetch notepad" 
+      });
+    }
+  });
+
+  // External API endpoint for updating notepad
+  app.put("/api/external/notepad", async (req, res) => {
+    try {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "Content-Type");
+      
+      const { content } = req.body;
+      if (typeof content !== 'string') {
+        return res.status(400).json({ 
+          success: false,
+          message: "Content must be a string" 
+        });
+      }
+      
+      const notepad = await storage.updateNotepad(content);
+      res.json({
+        success: true,
+        message: "Notepad updated successfully",
+        data: notepad
+      });
+    } catch (error) {
+      console.error("External API error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to update notepad" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
