@@ -76,6 +76,8 @@ export default function CustomerLoadTable() {
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
         algoAssignedResource: null,
         remark: remarkWithOriginal,
+        aiAcceptanceCount: (load.aiAcceptanceCount || 0) + 1,
+        incentivePoints: (load.incentivePoints || 0) + 2,
         // Keep human reserved resource as is
       });
     },
@@ -84,7 +86,7 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Assignment accepted - Algorithm resource cleared",
+        description: "Assignment accepted! +2 incentive points earned",
       });
     },
     onError: (error: Error) => {
@@ -113,6 +115,8 @@ export default function CustomerLoadTable() {
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
         algoAssignedResource: originalAlgo,
         remark: cleanedRemark,
+        aiAcceptanceCount: Math.max((load.aiAcceptanceCount || 0) - 1, 0),
+        incentivePoints: Math.max((load.incentivePoints || 0) - 2, 0),
         // Keep human reserved resource as is
       });
     },
@@ -121,7 +125,7 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Assignment reverted - Restored original AI suggestion",
+        description: "Assignment reverted - Incentive points deducted",
       });
     },
     onError: (error: Error) => {
@@ -148,6 +152,8 @@ export default function CustomerLoadTable() {
         priority: load.remarkPriority,
         remarkPriority: null,
         remark: load.remark ? `${load.remark} [Original priority: ${originalPriority}]` : `[Original priority: ${originalPriority}]`,
+        aiAcceptanceCount: (load.aiAcceptanceCount || 0) + 1,
+        incentivePoints: (load.incentivePoints || 0) + 2,
       });
     },
     onSuccess: () => {
@@ -155,7 +161,7 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Priority change accepted - AI suggestion applied",
+        description: "Priority change accepted! +2 incentive points earned",
       });
     },
     onError: (error: Error) => {
@@ -186,6 +192,8 @@ export default function CustomerLoadTable() {
         priority: originalPriority,
         remarkPriority: currentPriority, // Current becomes the AI suggestion
         remark: cleanedRemark,
+        aiAcceptanceCount: Math.max((load.aiAcceptanceCount || 0) - 1, 0),
+        incentivePoints: Math.max((load.incentivePoints || 0) - 2, 0),
       });
     },
     onSuccess: () => {
@@ -193,7 +201,7 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Priority change reverted - Restored original priority",
+        description: "Priority change reverted - Incentive points deducted",
       });
     },
     onError: (error: Error) => {
@@ -338,13 +346,13 @@ export default function CustomerLoadTable() {
                 <TableRow>
                   <TableHead className="w-8 p-2"></TableHead>
                   <TableHead className="w-16 p-2">Sl. No</TableHead>
-                  <TableHead className="min-w-[140px] p-2">Customer</TableHead>
-                  <TableHead className="w-20 p-2">AI Res.</TableHead>
-                  <TableHead className="w-20 p-2">Human Res.</TableHead>
-                  <TableHead className="w-24 p-2">Priority</TableHead>
-                  <TableHead className="w-16 p-2">Status</TableHead>
-                  <TableHead className="min-w-[120px] p-2">Remark</TableHead>
-                  <TableHead className="w-20 p-2">Action</TableHead>
+                  <TableHead className="min-w-[160px] p-2">Customer</TableHead>
+                  <TableHead className="w-24 p-2">AI Res.</TableHead>
+                  <TableHead className="w-24 p-2">Human Res.</TableHead>
+                  <TableHead className="w-28 p-2">Priority</TableHead>
+                  <TableHead className="w-20 p-2">Status</TableHead>
+                  <TableHead className="flex-1 p-2">Remark</TableHead>
+                  <TableHead className="w-24 p-2">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -440,7 +448,7 @@ export default function CustomerLoadTable() {
                         </Badge>
                       </TableCell>
                       <TableCell className="p-2">
-                        <div className="text-xs text-neutral-600 max-w-[120px] truncate cursor-help" title={load.remark || "-"}>
+                        <div className="text-xs text-neutral-600 cursor-help" title={load.remark || "-"}>
                           {load.remark || "-"}
                         </div>
                       </TableCell>

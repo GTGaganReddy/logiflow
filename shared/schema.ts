@@ -12,6 +12,8 @@ export const customerLoads = pgTable("customer_loads", {
   priority: text("priority").notNull(),
   remark: text("remark"),
   remarkPriority: text("remark_priority"),
+  aiAcceptanceCount: integer("ai_acceptance_count").notNull().default(0),
+  incentivePoints: integer("incentive_points").notNull().default(0),
   createdAt: text("created_at").notNull(),
   deliveryStartDate: text("delivery_start_date"),
   deliveryEndDate: text("delivery_end_date"),

@@ -144,12 +144,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const assigned = loads.filter(load => load.algoAssignedResource || load.humanReservedResource).length;
       const pending = loads.filter(load => !load.algoAssignedResource && !load.humanReservedResource).length;
       const highPriority = loads.filter(load => load.priority === 'High').length;
+      const aiAccepted = loads.reduce((sum, load) => sum + (load.aiAcceptanceCount || 0), 0);
+      const totalIncentivePoints = loads.reduce((sum, load) => sum + (load.incentivePoints || 0), 0);
       
       const stats = {
         totalLoads,
         assigned,
         pending,
         highPriority,
+        aiAccepted,
+        totalIncentivePoints,
         totalTrucks: trucks.length,
         availableTrucks: trucks.filter(truck => truck.status === 'available').length,
         busyTrucks: trucks.filter(truck => truck.status === 'busy').length,

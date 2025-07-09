@@ -7,6 +7,8 @@ interface Stats {
   assigned: number;
   pending: number;
   highPriority: number;
+  aiAccepted: number;
+  totalIncentivePoints: number;
   totalTrucks: number;
   availableTrucks: number;
   busyTrucks: number;
@@ -20,8 +22,8 @@ export default function DashboardStats() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        {[...Array(4)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-4">
+        {[...Array(6)].map((_, i) => (
           <Card key={i} className="animate-pulse">
             <CardContent className="p-3">
               <div className="h-12 bg-gray-200 rounded"></div>
@@ -33,7 +35,7 @@ export default function DashboardStats() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+    <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-4">
       <Card>
         <CardContent className="p-3">
           <div className="flex items-center justify-between">
@@ -78,6 +80,30 @@ export default function DashboardStats() {
               <p className="text-lg font-bold text-error">{stats?.highPriority || 0}</p>
             </div>
             <AlertTriangle className="text-error h-5 w-5" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-neutral-500 text-xs">AI Accepted</p>
+              <p className="text-lg font-bold text-blue-600">{stats?.aiAccepted || 0}</p>
+            </div>
+            <CheckCircle className="text-blue-600 h-5 w-5" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-neutral-500 text-xs">Incentive Points</p>
+              <p className="text-lg font-bold text-purple-600">{stats?.totalIncentivePoints || 0}</p>
+            </div>
+            <Package className="text-purple-600 h-5 w-5" />
           </div>
         </CardContent>
       </Card>
