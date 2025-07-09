@@ -97,7 +97,15 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
-### July 9, 2025 - Application Rebranding
+### July 9, 2025 - AI-Suggested Priority Changes & Accept Buttons
+- **Priority Suggestions**: Added `remarkPriority` field to schema for AI-suggested priority changes
+- **Accept Buttons**: Implemented accept buttons for both resource assignments and priority changes
+- **Visual AI Indicators**: Added AI badges to identify loads with AI suggestions
+- **Dual Priority Display**: Shows current priority and AI-suggested priority side by side
+- **Separate Mutations**: Created distinct mutations for resource and priority acceptance
+- **Enhanced UI**: Updated table to display AI suggestions with tooltips and accept actions
+
+### July 9, 2025 - Application Rebranding  
 - **Title Update**: Changed application name from "LogiFlow Customer Load Management" to "BubbleGPT Full Truck Load"
 - **Updated Documentation**: Modified API documentation, README, and HTML title to reflect new branding
 - **Header Redesign**: Updated dashboard header with "BubbleGPT" as main title and "Full Truck Load" as subtitle

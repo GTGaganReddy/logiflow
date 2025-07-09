@@ -111,6 +111,22 @@
       "deliveryEndDate": null,
       "deliveryEndTime": null,
       "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "EXT-1752049873774",
+      "customerName": "Priority Test Customer",
+      "algoAssignedResource": "TRK-005",
+      "humanReservedResource": null,
+      "priority": "high",
+      "remark": "Standard delivery",
+      "id": 47,
+      "location": null,
+      "createdAt": "2025-07-09T08:31:13.775Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
     }
   ],
   "trucks": [

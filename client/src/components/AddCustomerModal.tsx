@@ -43,6 +43,7 @@ export default function AddCustomerModal({ isOpen, onClose }: AddCustomerModalPr
       humanReservedResource: "",
       priority: "medium",
       remark: "",
+      remarkPriority: "",
       deliveryStartDate: "",
       deliveryEndDate: "",
       deliveryStartTime: "",

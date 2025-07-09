@@ -59,7 +59,7 @@ export default function CustomerLoadTable() {
     },
   });
 
-  const acceptMutation = useMutation({
+  const acceptResourceMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
       // Only proceed if human resource is assigned
       if (!load.humanReservedResource) {
@@ -84,6 +84,36 @@ export default function CustomerLoadTable() {
       toast({
         title: "Error", 
         description: error.message || "Failed to accept assignment",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const acceptPriorityMutation = useMutation({
+    mutationFn: async (load: CustomerLoad) => {
+      // Only proceed if AI suggested priority is available
+      if (!load.remarkPriority) {
+        throw new Error("No AI suggested priority available");
+      }
+      
+      // Update the customer load to change priority and clear AI suggestion
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
+        priority: load.remarkPriority,
+        remarkPriority: null,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      toast({
+        title: "Success",
+        description: "Priority change accepted - AI suggestion applied",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to accept priority change",
         variant: "destructive",
       });
     },
@@ -264,7 +294,14 @@ export default function CustomerLoadTable() {
                             {getInitials(load.customerName)}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-neutral-900">{load.customerName}</p>
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm font-medium text-neutral-900">{load.customerName}</p>
+                              {(load.remarkPriority || load.humanReservedResource) && (
+                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-600 bg-blue-50">
+                                  AI
+                                </Badge>
+                              )}
+                            </div>
                             {load.location && <p className="text-xs text-neutral-500">{load.location}</p>}
                             <p className="text-xs text-neutral-400">
                               Created: {new Date(load.createdAt).toLocaleDateString()}
@@ -285,9 +322,35 @@ export default function CustomerLoadTable() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getPriorityColor(load.priority)}>
-                          {load.priority?.charAt(0).toUpperCase() + load.priority?.slice(1).toLowerCase()}
-                        </Badge>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={getPriorityColor(load.priority)}>
+                            {load.priority?.charAt(0).toUpperCase() + load.priority?.slice(1).toLowerCase()}
+                          </Badge>
+                          {load.remarkPriority && (
+                            <div className="flex items-center space-x-1">
+                              <span className="text-xs text-blue-600 font-medium">AI suggests:</span>
+                              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                                {load.remarkPriority?.charAt(0).toUpperCase() + load.remarkPriority?.slice(1).toLowerCase()}
+                              </Badge>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
+                                    onClick={() => acceptPriorityMutation.mutate(load)}
+                                    disabled={acceptPriorityMutation.isPending}
+                                  >
+                                    <Check className="h-3 w-3" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Accept AI priority suggestion</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
@@ -324,8 +387,8 @@ export default function CustomerLoadTable() {
                                   variant="ghost"
                                   size="sm"
                                   className="p-1 text-success hover:bg-success hover:text-white"
-                                  onClick={() => acceptMutation.mutate(load)}
-                                  disabled={acceptMutation.isPending}
+                                  onClick={() => acceptResourceMutation.mutate(load)}
+                                  disabled={acceptResourceMutation.isPending}
                                 >
                                   <Check className="h-4 w-4" />
                                 </Button>
