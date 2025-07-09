@@ -342,16 +342,15 @@ export default function CustomerLoadTable() {
                   <TableHead className="w-20 p-2">AI Res.</TableHead>
                   <TableHead className="w-20 p-2">Human Res.</TableHead>
                   <TableHead className="w-24 p-2">Priority</TableHead>
-                  <TableHead className="w-20 p-2">Schedule</TableHead>
                   <TableHead className="w-16 p-2">Status</TableHead>
-                  <TableHead className="min-w-[100px] p-2">Remark</TableHead>
+                  <TableHead className="min-w-[120px] p-2">Remark</TableHead>
                   <TableHead className="w-20 p-2">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLoads.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8 text-neutral-500">
+                    <TableCell colSpan={9} className="text-center py-8 text-neutral-500">
                       No customer loads found. Add your first load to get started.
                     </TableCell>
                   </TableRow>
@@ -429,15 +428,6 @@ export default function CustomerLoadTable() {
                         </div>
                       </TableCell>
                       <TableCell className="p-2">
-                        <div className="text-xs">
-                          {load.deliveryDate ? (
-                            <span>{new Date(load.deliveryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                          ) : (
-                            <span className="text-neutral-400">Not set</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="p-2">
                         <Badge 
                           className={
                             load.deliveryStatus === "completed" ? "bg-success text-white text-xs px-2 py-1" :
@@ -449,7 +439,11 @@ export default function CustomerLoadTable() {
                           {load.deliveryStatus}
                         </Badge>
                       </TableCell>
-                      <TableCell className="p-2 text-xs text-neutral-600 max-w-[100px] truncate" title={load.remark || "-"}>{load.remark || "-"}</TableCell>
+                      <TableCell className="p-2">
+                        <div className="text-xs text-neutral-600 max-w-[120px] truncate cursor-help" title={load.remark || "-"}>
+                          {load.remark || "-"}
+                        </div>
+                      </TableCell>
                       <TableCell className="p-2">
                         <div className="flex items-center space-x-1">
                           {/* Resource Assignment Accept/Revert buttons */}
