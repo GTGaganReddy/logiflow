@@ -36,13 +36,13 @@
     {
       "slNo": "3",
       "customerName": "Salzburger Logistik Service",
-      "algoAssignedResource": "Z-1645NH",
-      "humanReservedResource": null,
+      "algoAssignedResource": "S-678PQ",
+      "humanReservedResource": "Z-1645NH",
       "priority": "medium",
       "remark": "Notepad assignment found, swap recommended.",
       "deliveryStartDate": "2025-07-13",
       "deliveryEndDate": "2025-07-13",
-      "deliveryStartTime": "08:00",
+      "deliveryStartTime": "2025-07-13T08:00:00Z",
       "deliveryEndTime": "16:00:00",
       "id": 42,
       "location": null,
@@ -1647,34 +1647,6 @@
       "id": 128
     },
     {
-      "customerLoadId": 42,
-      "sequenceNumber": 1,
-      "startingPoint": "Salzburg",
-      "endingPoint": "Innsbruck",
-      "startDate": "2025-07-13",
-      "startTime": "07:45",
-      "endDate": "2025-07-13",
-      "endTime": "11:20",
-      "breakTime": null,
-      "status": "pending",
-      "notes": "Weekend delivery - additional surcharge applies",
-      "id": 129
-    },
-    {
-      "customerLoadId": 42,
-      "sequenceNumber": 2,
-      "startingPoint": "Innsbruck",
-      "endingPoint": "",
-      "startDate": "2025-07-13",
-      "startTime": "14:30",
-      "endDate": "2025-07-13",
-      "endTime": "16:00",
-      "breakTime": "1800",
-      "status": "pending",
-      "notes": "Weekend delivery - additional surcharge applies",
-      "id": 130
-    },
-    {
       "customerLoadId": 40,
       "sequenceNumber": 1,
       "startingPoint": "Berlin",
@@ -1701,6 +1673,34 @@
       "status": "pending",
       "notes": "SHORT break",
       "id": 134
+    },
+    {
+      "customerLoadId": 42,
+      "sequenceNumber": 1,
+      "startingPoint": "Salzburg",
+      "endingPoint": "",
+      "startDate": "2025-07-13T07:45:00Z",
+      "startTime": "",
+      "endDate": "2025-07-13T11:20:00Z",
+      "endTime": "",
+      "breakTime": null,
+      "status": "pending",
+      "notes": "Weekend delivery - additional surcharge applies",
+      "id": 135
+    },
+    {
+      "customerLoadId": 42,
+      "sequenceNumber": 2,
+      "startingPoint": "Innsbruck",
+      "endingPoint": "",
+      "startDate": "2025-07-13T14:30:00Z",
+      "startTime": "",
+      "endDate": "2025-07-13T16:00:00Z",
+      "endTime": "",
+      "breakTime": "1800",
+      "status": "pending",
+      "notes": "Weekend delivery - additional surcharge applies",
+      "id": 136
     }
   ]
 }

@@ -286,21 +286,21 @@ export default function CustomerLoadTable() {
   return (
     <>
       {/* Filter and Search */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex items-center space-x-4 w-full md:w-auto">
+      <Card className="mb-4">
+        <CardContent className="p-3">
+          <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div className="flex items-center space-x-3 w-full md:w-auto">
               <div className="relative flex-1 md:flex-none">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                <Search className="absolute left-2 top-2 h-3 w-3 text-neutral-400" />
                 <Input
                   placeholder="Search customers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full md:w-80"
+                  className="pl-7 h-8 w-full md:w-60 text-sm"
                 />
               </div>
               <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[140px] h-8 text-sm">
                   <SelectValue placeholder="All Priorities" />
                 </SelectTrigger>
                 <SelectContent>
@@ -311,15 +311,15 @@ export default function CustomerLoadTable() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
-                <Filter className="h-4 w-4" />
+            <div className="flex items-center space-x-1">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Filter className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="sm">
-                <ArrowUpDown className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <ArrowUpDown className="h-3 w-3" />
               </Button>
-              <Button variant="ghost" size="sm">
-                <Download className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Download className="h-3 w-3" />
               </Button>
             </div>
           </div>
@@ -328,24 +328,24 @@ export default function CustomerLoadTable() {
 
       {/* Customer Load Management Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>Customer Load Management</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Customer Load Management</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <div className="overflow-x-auto">
-            <Table>
+            <Table className="text-sm">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12"></TableHead>
-                  <TableHead>Sl. No</TableHead>
-                  <TableHead>Customer Name</TableHead>
-                  <TableHead>Algo Assigned Resource</TableHead>
-                  <TableHead>Human Reserved Resource</TableHead>
-                  <TableHead>Priority</TableHead>
-                  <TableHead>Delivery Schedule</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Remark</TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead className="w-8 p-2"></TableHead>
+                  <TableHead className="w-16 p-2">Sl. No</TableHead>
+                  <TableHead className="min-w-[140px] p-2">Customer</TableHead>
+                  <TableHead className="w-20 p-2">AI Res.</TableHead>
+                  <TableHead className="w-20 p-2">Human Res.</TableHead>
+                  <TableHead className="w-24 p-2">Priority</TableHead>
+                  <TableHead className="w-20 p-2">Schedule</TableHead>
+                  <TableHead className="w-16 p-2">Status</TableHead>
+                  <TableHead className="min-w-[100px] p-2">Remark</TableHead>
+                  <TableHead className="w-20 p-2">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -363,96 +363,95 @@ export default function CustomerLoadTable() {
                     return (
                     <React.Fragment key={load.id}>
                       <TableRow className={`hover:bg-neutral-50 ${hasAISuggestions ? 'bg-blue-50 border-l-4 border-l-blue-400' : ''}`}>
-                        <TableCell>
+                        <TableCell className="p-2">
                           <Button 
                             variant="ghost" 
                             size="sm"
                             onClick={() => toggleRowExpansion(load.id)}
-                            className="h-8 w-8 p-0"
+                            className="h-6 w-6 p-0"
                           >
                             {expandedRows.has(load.id) ? (
-                              <ChevronDown className="h-4 w-4" />
+                              <ChevronDown className="h-3 w-3" />
                             ) : (
-                              <ChevronRight className="h-4 w-4" />
+                              <ChevronRight className="h-3 w-3" />
                             )}
                           </Button>
                         </TableCell>
-                        <TableCell>{filteredLoads.indexOf(load) + 1}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        <TableCell className="p-2 text-xs font-medium">{filteredLoads.indexOf(load) + 1}</TableCell>
+                      <TableCell className="p-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-medium">
                             {getInitials(load.customerName)}
                           </div>
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <p className="text-sm font-medium text-neutral-900">{load.customerName}</p>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center space-x-1">
+                              <p className="text-sm font-medium text-neutral-900 truncate">{load.customerName}</p>
                               {(load.remarkPriority || load.humanReservedResource) && (
-                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-600 bg-blue-50">
+                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-600 bg-blue-50 px-1">
                                   AI
                                 </Badge>
                               )}
                             </div>
-                            {load.location && <p className="text-xs text-neutral-500">{load.location}</p>}
-                            <p className="text-xs text-neutral-400">
-                              Created: {new Date(load.createdAt).toLocaleDateString()}
-                            </p>
+                            <div className="text-xs text-neutral-500 truncate">{load.location || "No location"}</div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          {getResourceBadge(load.algoAssignedResource, load)}
-                          {load.algoAssignedResource && <Truck className="h-4 w-4 text-success" />}
+                      <TableCell className="p-2">
+                        <div className="text-xs">
+                          {load.algoAssignedResource ? (
+                            <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
+                          )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          {getResourceBadge(load.humanReservedResource, load)}
-                          {load.humanReservedResource && <Truck className="h-4 w-4 text-primary" />}
+                      <TableCell className="p-2">
+                        <div className="text-xs">
+                          {load.humanReservedResource ? (
+                            <Badge className="bg-primary text-white text-xs px-2 py-1">{load.humanReservedResource}</Badge>
+                          ) : (
+                            <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
+                          )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getPriorityColor(load.priority)}>
+                      <TableCell className="p-2">
+                        <div className="space-y-1">
+                          <Badge className={getPriorityColor(load.priority) + " text-xs px-2 py-1"}>
                             {load.priority?.charAt(0).toUpperCase() + load.priority?.slice(1).toLowerCase()}
                           </Badge>
                           {load.remarkPriority && (
-                            <div className="flex items-center space-x-1">
-                              <span className="text-xs text-blue-600 font-medium">AI suggests:</span>
-                              <Badge variant="outline" className="text-blue-600 border-blue-600">
+                            <div className="text-xs text-blue-600">
+                              AI: <Badge variant="outline" className="text-blue-600 border-blue-600 text-xs px-1">
                                 {load.remarkPriority?.charAt(0).toUpperCase() + load.remarkPriority?.slice(1).toLowerCase()}
                               </Badge>
                             </div>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
+                      <TableCell className="p-2">
+                        <div className="text-xs">
                           {load.deliveryDate ? (
-                            <div className="flex items-center space-x-1">
-                              <Calendar className="h-3 w-3 text-neutral-500" />
-                              <span>{new Date(load.deliveryDate).toLocaleDateString()}</span>
-                            </div>
+                            <span>{new Date(load.deliveryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                           ) : (
                             <span className="text-neutral-400">Not set</span>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="p-2">
                         <Badge 
                           className={
-                            load.deliveryStatus === "completed" ? "bg-success text-white" :
-                            load.deliveryStatus === "in-progress" ? "bg-warning text-white" :
-                            load.deliveryStatus === "cancelled" ? "bg-error text-white" :
-                            "bg-neutral-400 text-white"
+                            load.deliveryStatus === "completed" ? "bg-success text-white text-xs px-2 py-1" :
+                            load.deliveryStatus === "in-progress" ? "bg-warning text-white text-xs px-2 py-1" :
+                            load.deliveryStatus === "cancelled" ? "bg-error text-white text-xs px-2 py-1" :
+                            "bg-neutral-400 text-white text-xs px-2 py-1"
                           }
                         >
                           {load.deliveryStatus}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-neutral-600">{load.remark || "-"}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
+                      <TableCell className="p-2 text-xs text-neutral-600 max-w-[100px] truncate" title={load.remark || "-"}>{load.remark || "-"}</TableCell>
+                      <TableCell className="p-2">
+                        <div className="flex items-center space-x-1">
                           {/* Resource Assignment Accept/Revert buttons */}
                           {load.humanReservedResource && load.algoAssignedResource && (
                             <Tooltip>
@@ -460,11 +459,11 @@ export default function CustomerLoadTable() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="p-1 text-success hover:bg-success hover:text-white"
+                                  className="p-1 h-6 w-6 text-success hover:bg-success hover:text-white"
                                   onClick={() => acceptResourceMutation.mutate(load)}
                                   disabled={acceptResourceMutation.isPending}
                                 >
-                                  <Check className="h-4 w-4" />
+                                  <Check className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -478,11 +477,11 @@ export default function CustomerLoadTable() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="p-1 text-orange-600 hover:bg-orange-100"
+                                  className="p-1 h-6 w-6 text-orange-600 hover:bg-orange-100"
                                   onClick={() => revertResourceMutation.mutate(load)}
                                   disabled={revertResourceMutation.isPending}
                                 >
-                                  <Undo2 className="h-4 w-4" />
+                                  <Undo2 className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -498,11 +497,11 @@ export default function CustomerLoadTable() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="p-1 text-blue-600 hover:bg-blue-100"
+                                  className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
                                   onClick={() => acceptPriorityMutation.mutate(load)}
                                   disabled={acceptPriorityMutation.isPending}
                                 >
-                                  <Check className="h-4 w-4" />
+                                  <Check className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
@@ -516,11 +515,11 @@ export default function CustomerLoadTable() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="p-1 text-orange-600 hover:bg-orange-100"
+                                  className="p-1 h-6 w-6 text-orange-600 hover:bg-orange-100"
                                   onClick={() => revertPriorityMutation.mutate(load)}
                                   disabled={revertPriorityMutation.isPending}
                                 >
-                                  <Undo2 className="h-4 w-4" />
+                                  <Undo2 className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
