@@ -404,7 +404,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Content-Type");
       
-      const { journeyMilestones, ...loadData } = req.body;
+      const { journeyMilestones, PriorityAIsuggestion, ...loadData } = req.body;
+      
+      // Map alternative field names for easier API usage
+      if (PriorityAIsuggestion && !loadData.remarkPriority) {
+        loadData.remarkPriority = PriorityAIsuggestion;
+      }
       
       // Check if a customer load with the same name already exists
       const existingLoad = await storage.getCustomerLoadByName(loadData.customerName);
