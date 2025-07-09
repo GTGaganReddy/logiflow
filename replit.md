@@ -100,7 +100,7 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 ### July 9, 2025 - Application Rebranding
 - **Title Update**: Changed application name from "LogiFlow Customer Load Management" to "BubbleGPT Full Truck Load"
 - **Updated Documentation**: Modified API documentation, README, and HTML title to reflect new branding
-- **Header Redesign**: Updated dashboard header with new application name and subtitle
+- **Header Redesign**: Updated dashboard header with "BubbleGPT" as main title and "Full Truck Load" as subtitle
 
 ### July 8, 2025 - Milestone Notes & Customer Name-Based API
 - **Inline Notes Editing**: Added real-time editing capability for journey milestone notes with hover-to-edit interface
