@@ -9,6 +9,11 @@ Development: `http://localhost:5000`
 
 ## External API Endpoints
 
+### Field Name Mapping for AI Suggestions
+For convenience, the external API supports alternative field names:
+- `PriorityAIsuggestion` → `remarkPriority` (AI-suggested priority change)
+- Both field names work identically in API requests
+
 ### Customer Loads (Consolidated with Journey Milestones)
 
 #### 1. Get All Customer Loads with Journey Milestones
@@ -152,6 +157,8 @@ Creates a new customer load or updates an existing one (by customer name) with o
 - `algoAssignedResource` (string): Algorithm-assigned truck resource
 - `humanReservedResource` (string): Human-reserved truck resource
 - `priority` (string): Priority level ("high", "medium", "low")
+- `remarkPriority` (string): AI-suggested priority change ("high", "medium", "low")
+- `PriorityAIsuggestion` (string): Alternative field name for `remarkPriority`
 - `status` (string): Current status ("pending", "assigned", "in-progress", "completed")
 - `remark` (string): Additional notes or remarks
 - `deliveryStartDate` (string): Start date in YYYY-MM-DD format
@@ -309,6 +316,103 @@ Updates the content of the logistics notepad.
   }
 }
 ```
+
+## AI Suggestions and Accept Functionality
+
+### AI Priority Suggestions
+
+The system supports AI-powered priority suggestions that appear in the dashboard with visual indicators and accept functionality.
+
+#### Creating Loads with AI Priority Suggestions
+
+You can include AI priority suggestions when creating customer loads using either field name:
+
+**Example 1: Using `remarkPriority`**
+```json
+{
+  "customerName": "Smart AI Customer",
+  "priority": "low",
+  "remarkPriority": "high",
+  "algoAssignedResource": "TRK-001",
+  "remark": "AI suggests priority increase due to delivery window"
+}
+```
+
+**Example 2: Using `PriorityAIsuggestion` (alternative field name)**
+```json
+{
+  "customerName": "Priority AI Test Customer", 
+  "priority": "medium",
+  "PriorityAIsuggestion": "high",
+  "algoAssignedResource": "TRK-002",
+  "remark": "Testing AI priority suggestion feature"
+}
+```
+
+#### Dashboard Behavior with AI Suggestions
+
+When a customer load has AI suggestions, the dashboard will:
+
+1. **Row Highlighting**: The entire row will be highlighted with:
+   - Light blue background (`bg-blue-50`)
+   - Blue left border (`border-l-4 border-l-blue-400`)
+
+2. **AI Badge**: A blue "AI" badge appears next to the customer name
+
+3. **Priority Display**: Shows both current and AI-suggested priority:
+   - Current priority: Regular priority badge
+   - AI suggestion: "AI suggests: [priority]" with blue outline badge
+
+4. **Accept Buttons**: Blue accept buttons appear in the Actions column for:
+   - Resource assignment acceptance (green checkmark)
+   - Priority suggestion acceptance (blue checkmark)
+
+#### Accept API Endpoints
+
+**Accept AI Priority Suggestion**
+```
+PUT /api/customer-loads/:id
+```
+
+Request body to accept AI priority suggestion:
+```json
+{
+  "priority": "high",
+  "remarkPriority": null
+}
+```
+
+This will:
+- Update the load's priority to the AI-suggested value
+- Clear the AI suggestion (`remarkPriority` becomes null)
+- Remove the row highlighting and AI indicators
+
+**Accept Resource Assignment**
+```
+PUT /api/customer-loads/:id  
+```
+
+Request body to accept human resource assignment:
+```json
+{
+  "algoAssignedResource": null,
+  "humanReservedResource": "TRK-HUMAN-001"
+}
+```
+
+This will:
+- Clear the algorithm assignment
+- Keep the human resource assignment
+- Remove resource-related AI indicators
+
+### Testing AI Suggestions
+
+To test AI suggestion functionality:
+
+1. Create a customer load with both current and suggested priorities
+2. View the dashboard to see row highlighting and AI badges
+3. Use accept buttons in Actions column to accept suggestions
+4. Verify that accepted suggestions update the load and remove indicators
 
 ## Error Responses
 
