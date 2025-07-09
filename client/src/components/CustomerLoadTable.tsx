@@ -440,7 +440,7 @@ export default function CustomerLoadTable() {
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           {/* Resource Assignment Accept/Revert buttons */}
-                          {load.humanReservedResource && !load.algoAssignedResource && (
+                          {load.humanReservedResource && load.algoAssignedResource && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button

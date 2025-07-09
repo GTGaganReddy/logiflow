@@ -417,15 +417,14 @@ PUT /api/customer-loads/:id
 Request body to accept human resource assignment:
 ```json
 {
-  "algoAssignedResource": null,
-  "humanReservedResource": "TRK-HUMAN-001"
+  "algoAssignedResource": null
 }
 ```
 
 This will:
-- Clear the algorithm assignment
+- Clear the algorithm assignment (accept human choice)
 - Keep the human resource assignment
-- Show revert button for resource assignment
+- Remove accept button and show orange revert button
 
 **Revert Resource Assignment**
 ```
@@ -435,15 +434,14 @@ PUT /api/customer-loads/:id
 Request body to revert resource assignment:
 ```json
 {
-  "algoAssignedResource": "TRK-HUMAN-001",
-  "humanReservedResource": null
+  "algoAssignedResource": "TRK-HUMAN-001"
 }
 ```
 
 This will:
-- Move human assignment back to algorithm assignment
-- Clear human resource assignment
-- Show accept button again
+- Restore algorithm assignment with the human resource value
+- Keep human resource assignment
+- Remove revert button and show green accept button again
 
 ### Testing AI Suggestions and Undo/Revert
 
