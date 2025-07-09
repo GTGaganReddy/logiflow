@@ -97,13 +97,14 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
-### July 9, 2025 - AI-Suggested Priority Changes & Accept Buttons
+### July 9, 2025 - AI-Suggested Priority Changes & Accept/Revert Functionality
 - **Priority Suggestions**: Added `remarkPriority` field to schema for AI-suggested priority changes
-- **Accept Buttons**: Implemented accept buttons for both resource assignments and priority changes
-- **Visual AI Indicators**: Added AI badges to identify loads with AI suggestions
-- **Dual Priority Display**: Shows current priority and AI-suggested priority side by side
-- **Separate Mutations**: Created distinct mutations for resource and priority acceptance
-- **Enhanced UI**: Updated table to display AI suggestions with tooltips and accept actions
+- **Accept/Revert Buttons**: Implemented accept buttons that change to revert buttons after acceptance
+- **Undo Mechanism**: Complete undo/revert capability for both resource and priority suggestions
+- **Visual State Indicators**: Blue accept buttons (Check icon) change to orange revert buttons (Undo2 icon)
+- **Original State Storage**: Stores original priority in remark field for reliable revert functionality
+- **Dual-Direction Flow**: Accept → Revert → Accept cycle with proper state management
+- **Enhanced UI**: Actions column consolidates all AI suggestion management with clear visual feedback
 
 ### July 9, 2025 - Application Rebranding  
 - **Title Update**: Changed application name from "LogiFlow Customer Load Management" to "BubbleGPT Full Truck Load"

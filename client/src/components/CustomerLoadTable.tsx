@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight, Check, Undo2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -89,6 +89,36 @@ export default function CustomerLoadTable() {
     },
   });
 
+  const revertResourceMutation = useMutation({
+    mutationFn: async (load: CustomerLoad) => {
+      // Only proceed if human resource is assigned and algo resource is null
+      if (!load.humanReservedResource || load.algoAssignedResource) {
+        throw new Error("Cannot revert - original state not available");
+      }
+      
+      // Restore the algorithm assignment and clear human assignment
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
+        algoAssignedResource: load.humanReservedResource, // Move human to algo
+        humanReservedResource: null,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      toast({
+        title: "Success",
+        description: "Assignment reverted - Restored to AI suggestion",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to revert assignment",
+        variant: "destructive",
+      });
+    },
+  });
+
   const acceptPriorityMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
       // Only proceed if AI suggested priority is available
@@ -96,10 +126,14 @@ export default function CustomerLoadTable() {
         throw new Error("No AI suggested priority available");
       }
       
+      // Store original priority in remark for revert capability
+      const originalPriority = load.priority;
+      
       // Update the customer load to change priority and clear AI suggestion
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
         priority: load.remarkPriority,
         remarkPriority: null,
+        remark: load.remark ? `${load.remark} [Original priority: ${originalPriority}]` : `[Original priority: ${originalPriority}]`,
       });
     },
     onSuccess: () => {
@@ -114,6 +148,44 @@ export default function CustomerLoadTable() {
       toast({
         title: "Error", 
         description: error.message || "Failed to accept priority change",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const revertPriorityMutation = useMutation({
+    mutationFn: async (load: CustomerLoad) => {
+      // Extract original priority from remark
+      const remarkMatch = load.remark?.match(/\[Original priority: (high|medium|low)\]/);
+      if (!remarkMatch) {
+        throw new Error("Cannot revert - original priority not found");
+      }
+      
+      const originalPriority = remarkMatch[1];
+      const currentPriority = load.priority;
+      
+      // Clean the remark by removing the original priority notation
+      const cleanedRemark = load.remark?.replace(/\s*\[Original priority: (high|medium|low)\]/, '') || '';
+      
+      // Update the customer load to revert priority and restore AI suggestion
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
+        priority: originalPriority,
+        remarkPriority: currentPriority, // Current becomes the AI suggestion
+        remark: cleanedRemark,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
+      toast({
+        title: "Success",
+        description: "Priority change reverted - Restored original priority",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error", 
+        description: error.message || "Failed to revert priority change",
         variant: "destructive",
       });
     },
@@ -367,8 +439,8 @@ export default function CustomerLoadTable() {
                       <TableCell className="text-sm text-neutral-600">{load.remark || "-"}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          {/* Accept buttons for AI suggestions - both resource and priority */}
-                          {load.humanReservedResource && (
+                          {/* Resource Assignment Accept/Revert buttons */}
+                          {load.humanReservedResource && !load.algoAssignedResource && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
@@ -386,6 +458,26 @@ export default function CustomerLoadTable() {
                               </TooltipContent>
                             </Tooltip>
                           )}
+                          {load.humanReservedResource && !load.algoAssignedResource && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="p-1 text-orange-600 hover:bg-orange-100"
+                                  onClick={() => revertResourceMutation.mutate(load)}
+                                  disabled={revertResourceMutation.isPending}
+                                >
+                                  <Undo2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Revert resource assignment</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                          
+                          {/* Priority Accept/Revert buttons */}
                           {load.remarkPriority && (
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -401,6 +493,24 @@ export default function CustomerLoadTable() {
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Accept AI priority suggestion</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                          {!load.remarkPriority && load.remark?.includes('[Original priority:') && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="p-1 text-orange-600 hover:bg-orange-100"
+                                  onClick={() => revertPriorityMutation.mutate(load)}
+                                  disabled={revertPriorityMutation.isPending}
+                                >
+                                  <Undo2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Revert priority change</p>
                               </TooltipContent>
                             </Tooltip>
                           )}

@@ -7,14 +7,15 @@
       "priority": "low",
       "deliveryStartDate": "2025-07-11",
       "deliveryEndDate": "2025-07-12",
-      "deliveryStartTime": "11:36",
+      "deliveryStartTime": "2025-07-11T11:36:00Z",
       "deliveryEndTime": "08:00:00",
       "id": 40,
       "location": null,
       "humanReservedResource": null,
-      "remark": null,
+      "remark": "Feedback suggest Higher Priority",
       "createdAt": "2025-07-09T00:51:00.704Z",
-      "deliveryStatus": "pending"
+      "deliveryStatus": "pending",
+      "remarkPriority": "high"
     },
     {
       "slNo": "2",
@@ -109,6 +110,23 @@
       "remark": null,
       "createdAt": "2025-07-09T06:58:44.966Z",
       "deliveryEndDate": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "EXT-1752053033856",
+      "customerName": "Undo Test Customer",
+      "algoAssignedResource": "TRK-AI-001",
+      "humanReservedResource": "TRK-HUMAN-001",
+      "priority": "medium",
+      "remark": "Test customer for undo/revert functionality",
+      "remarkPriority": "high",
+      "id": 47,
+      "location": null,
+      "createdAt": "2025-07-09T09:23:53.857Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
       "deliveryEndTime": null,
       "deliveryStatus": "pending"
     }
@@ -1569,34 +1587,6 @@
       "id": 124
     },
     {
-      "customerLoadId": 40,
-      "sequenceNumber": 1,
-      "startingPoint": "Berlin",
-      "endingPoint": "Munich",
-      "startDate": "2025-07-11",
-      "startTime": "11:24",
-      "endDate": "2025-07-11",
-      "endTime": "15:00",
-      "breakTime": null,
-      "status": "pending",
-      "notes": null,
-      "id": 125
-    },
-    {
-      "customerLoadId": 40,
-      "sequenceNumber": 2,
-      "startingPoint": "Munich",
-      "endingPoint": "",
-      "startDate": "2025-07-11",
-      "startTime": "22:57",
-      "endDate": "2025-07-12",
-      "endTime": "08:00",
-      "breakTime": "2700",
-      "status": "pending",
-      "notes": null,
-      "id": 126
-    },
-    {
       "customerLoadId": 41,
       "sequenceNumber": 1,
       "startingPoint": "Vienna",
@@ -1651,6 +1641,34 @@
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
       "id": 130
+    },
+    {
+      "customerLoadId": 40,
+      "sequenceNumber": 1,
+      "startingPoint": "Berlin",
+      "endingPoint": "",
+      "startDate": "2025-07-11T11:24:00Z",
+      "startTime": "",
+      "endDate": "2025-07-11T15:00:00Z",
+      "endTime": "",
+      "breakTime": null,
+      "status": "pending",
+      "notes": null,
+      "id": 133
+    },
+    {
+      "customerLoadId": 40,
+      "sequenceNumber": 2,
+      "startingPoint": "Munich",
+      "endingPoint": "",
+      "startDate": "2025-07-11T22:57:00Z",
+      "startTime": "",
+      "endDate": "2025-07-12T08:00:00Z",
+      "endTime": "",
+      "breakTime": "2700",
+      "status": "pending",
+      "notes": "SHORT break",
+      "id": 134
     }
   ]
 }

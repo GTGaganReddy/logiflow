@@ -367,7 +367,7 @@ When a customer load has AI suggestions, the dashboard will:
    - Resource assignment acceptance (green checkmark)
    - Priority suggestion acceptance (blue checkmark)
 
-#### Accept API Endpoints
+#### Accept and Revert API Endpoints
 
 **Accept AI Priority Suggestion**
 ```
@@ -378,14 +378,36 @@ Request body to accept AI priority suggestion:
 ```json
 {
   "priority": "high",
-  "remarkPriority": null
+  "remarkPriority": null,
+  "remark": "Original remark [Original priority: medium]"
 }
 ```
 
 This will:
 - Update the load's priority to the AI-suggested value
 - Clear the AI suggestion (`remarkPriority` becomes null)
-- Remove the row highlighting and AI indicators
+- Store original priority in remark for revert capability
+- Remove the row highlighting and show revert button
+
+**Revert AI Priority Suggestion**
+```
+PUT /api/customer-loads/:id
+```
+
+Request body to revert priority change:
+```json
+{
+  "priority": "medium",
+  "remarkPriority": "high", 
+  "remark": "Original remark"
+}
+```
+
+This will:
+- Restore the original priority
+- Set current priority as new AI suggestion
+- Clean the remark by removing original priority notation
+- Show accept button again with row highlighting
 
 **Accept Resource Assignment**
 ```
@@ -403,16 +425,54 @@ Request body to accept human resource assignment:
 This will:
 - Clear the algorithm assignment
 - Keep the human resource assignment
-- Remove resource-related AI indicators
+- Show revert button for resource assignment
 
-### Testing AI Suggestions
+**Revert Resource Assignment**
+```
+PUT /api/customer-loads/:id
+```
 
-To test AI suggestion functionality:
+Request body to revert resource assignment:
+```json
+{
+  "algoAssignedResource": "TRK-HUMAN-001",
+  "humanReservedResource": null
+}
+```
 
-1. Create a customer load with both current and suggested priorities
-2. View the dashboard to see row highlighting and AI badges
-3. Use accept buttons in Actions column to accept suggestions
-4. Verify that accepted suggestions update the load and remove indicators
+This will:
+- Move human assignment back to algorithm assignment
+- Clear human resource assignment
+- Show accept button again
+
+### Testing AI Suggestions and Undo/Revert
+
+To test the complete AI suggestion workflow:
+
+1. **Create with AI suggestions**: Create a customer load with both current and suggested priorities
+2. **View suggestions**: Dashboard shows row highlighting, AI badges, and blue accept buttons
+3. **Accept suggestions**: Use accept buttons in Actions column to apply AI suggestions
+4. **Verify acceptance**: Accepted suggestions update the load and show orange revert buttons
+5. **Test revert**: Use revert buttons to undo changes and restore original state
+6. **Verify revert**: Reverted changes restore original values and show accept buttons again
+
+**Complete Test Example:**
+```bash
+# 1. Create load with AI suggestions
+curl -X POST http://localhost:5000/api/external/customer-loads \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "Undo Test Customer",
+    "priority": "medium",
+    "remarkPriority": "high",
+    "algoAssignedResource": "TRK-AI-001",
+    "humanReservedResource": "TRK-HUMAN-001"
+  }'
+
+# 2. Dashboard shows blue highlighted row with accept buttons
+# 3. Click accept buttons - row highlighting disappears, revert buttons appear
+# 4. Click revert buttons - original state restored with accept buttons
+```
 
 ## Error Responses
 
