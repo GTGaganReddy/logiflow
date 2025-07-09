@@ -1,0 +1,36 @@
+[
+  {
+    "slNo": "PENDING-001",
+    "customerName": "Unassigned Customer A",
+    "algoAssignedResource": null,
+    "priority": "high",
+    "deliveryStartDate": "2025-07-20",
+    "deliveryStartTime": "08:00",
+    "deliveryEndDate": "2025-07-20",
+    "deliveryEndTime": "16:00",
+    "location": null,
+    "humanReservedResource": null,
+    "remark": "Awaiting resource assignment",
+    "deliveryStatus": "pending",
+    "remarkPriority": null,
+    "aiAcceptanceCount": 0,
+    "incentivePoints": 0
+  },
+  {
+    "slNo": "PENDING-002",
+    "customerName": "Unassigned Customer B",
+    "algoAssignedResource": null,
+    "priority": "medium",
+    "deliveryStartDate": "2025-07-21",
+    "deliveryStartTime": "09:00",
+    "deliveryEndDate": "2025-07-21",
+    "deliveryEndTime": "17:00",
+    "location": null,
+    "humanReservedResource": null,
+    "remark": "Urgent delivery required",
+    "deliveryStatus": "pending",
+    "remarkPriority": null,
+    "aiAcceptanceCount": 0,
+    "incentivePoints": 0
+  }
+]

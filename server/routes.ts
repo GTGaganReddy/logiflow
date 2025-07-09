@@ -141,9 +141,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const trucks = await storage.getTrucks();
       
       const totalLoads = loads.length;
-      const assigned = loads.filter(load => load.algoAssignedResource || load.humanReservedResource).length;
-      const pending = loads.filter(load => !load.algoAssignedResource && !load.humanReservedResource).length;
-      const highPriority = loads.filter(load => load.priority === 'High').length;
+      const assigned = loads.filter(load => load.deliveryStatus === 'assigned').length;
+      const pending = loads.filter(load => load.deliveryStatus === 'pending').length;
+      const highPriority = loads.filter(load => load.priority?.toLowerCase() === 'high').length;
       const aiAccepted = loads.reduce((sum, load) => sum + (load.aiAcceptanceCount || 0), 0);
       const totalIncentivePoints = loads.reduce((sum, load) => sum + (load.incentivePoints || 0), 0);
       
