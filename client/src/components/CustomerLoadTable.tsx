@@ -351,7 +351,7 @@ export default function CustomerLoadTable() {
                   <TableHead className="w-24 p-2">Human Res.</TableHead>
                   <TableHead className="w-28 p-2">Priority</TableHead>
                   <TableHead className="w-20 p-2">Status</TableHead>
-                  <TableHead className="flex-1 p-2">Remark</TableHead>
+                  <TableHead className="w-40 p-2">Remark</TableHead>
                   <TableHead className="w-24 p-2">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -400,7 +400,7 @@ export default function CustomerLoadTable() {
                             <div className="flex items-center space-x-1">
                               <p className="text-sm font-medium text-neutral-900 truncate">{load.customerName}</p>
                               {hasAnyAISuggestions && (
-                                <Badge variant="outline" className={`text-xs px-1 ${
+                                <Badge variant="outline" className={`text-xs px-1.5 py-0.5 whitespace-nowrap ${
                                   hasPendingAISuggestions 
                                     ? 'text-blue-600 border-blue-600 bg-blue-50' 
                                     : 'text-green-600 border-green-600 bg-green-50'
