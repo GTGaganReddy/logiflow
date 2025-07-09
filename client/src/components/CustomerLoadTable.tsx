@@ -270,9 +270,13 @@ export default function CustomerLoadTable() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredLoads.map((load) => (
+                  filteredLoads.map((load) => {
+                    // Check if this load has AI suggestions
+                    const hasAISuggestions = load.remarkPriority || load.humanReservedResource;
+                    
+                    return (
                     <React.Fragment key={load.id}>
-                      <TableRow className="hover:bg-neutral-50">
+                      <TableRow className={`hover:bg-neutral-50 ${hasAISuggestions ? 'bg-blue-50 border-l-4 border-l-blue-400' : ''}`}>
                         <TableCell>
                           <Button 
                             variant="ghost" 
@@ -332,22 +336,6 @@ export default function CustomerLoadTable() {
                               <Badge variant="outline" className="text-blue-600 border-blue-600">
                                 {load.remarkPriority?.charAt(0).toUpperCase() + load.remarkPriority?.slice(1).toLowerCase()}
                               </Badge>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
-                                    onClick={() => acceptPriorityMutation.mutate(load)}
-                                    disabled={acceptPriorityMutation.isPending}
-                                  >
-                                    <Check className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Accept AI priority suggestion</p>
-                                </TooltipContent>
-                              </Tooltip>
                             </div>
                           )}
                         </div>
@@ -379,7 +367,7 @@ export default function CustomerLoadTable() {
                       <TableCell className="text-sm text-neutral-600">{load.remark || "-"}</TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          {/* Accept button - only show if human resource is assigned */}
+                          {/* Accept buttons for AI suggestions - both resource and priority */}
                           {load.humanReservedResource && (
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -394,7 +382,25 @@ export default function CustomerLoadTable() {
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Accept human assignment and clear algorithm resource</p>
+                                <p>Accept human resource assignment</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                          {load.remarkPriority && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="p-1 text-blue-600 hover:bg-blue-100"
+                                  onClick={() => acceptPriorityMutation.mutate(load)}
+                                  disabled={acceptPriorityMutation.isPending}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Accept AI priority suggestion</p>
                               </TooltipContent>
                             </Tooltip>
                           )}
@@ -434,7 +440,8 @@ export default function CustomerLoadTable() {
                       </TableRow>
                     )}
                   </React.Fragment>
-                  ))
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
