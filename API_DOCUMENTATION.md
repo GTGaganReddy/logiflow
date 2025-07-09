@@ -1,7 +1,7 @@
-# LogiFlow API Documentation for GPT Assistant Integration
+# BubbleGPT Full Truck Load API Documentation for GPT Assistant Integration
 
 ## Overview
-This document provides the API endpoints for integrating with the LogiFlow logistics dashboard from external systems like GPT assistants.
+This document provides the API endpoints for integrating with the BubbleGPT Full Truck Load logistics dashboard from external systems like GPT assistants.
 
 ## Base URL
 When deployed: `https://your-replit-app.replit.app`

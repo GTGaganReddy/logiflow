@@ -1,8 +1,8 @@
-# LogiFlow - Customer Load Management System
+# BubbleGPT Full Truck Load - Logistics Management System
 
 ## Overview
 
-LogiFlow is a web-based logistics dashboard application built for managing customer loads and fleet operations. The system provides a comprehensive interface for tracking shipments, managing truck assignments, and maintaining operational notes through an integrated notepad system.
+BubbleGPT Full Truck Load is a web-based logistics dashboard application built for managing customer loads and fleet operations. The system provides a comprehensive interface for tracking shipments, managing truck assignments, and maintaining operational notes through an integrated notepad system.
 
 ## User Preferences
 
@@ -96,6 +96,11 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 - **Migration Path**: Abstract storage interface allows seamless backend switching
 
 ## Recent Changes
+
+### July 9, 2025 - Application Rebranding
+- **Title Update**: Changed application name from "LogiFlow Customer Load Management" to "BubbleGPT Full Truck Load"
+- **Updated Documentation**: Modified API documentation, README, and HTML title to reflect new branding
+- **Header Redesign**: Updated dashboard header with new application name and subtitle
 
 ### July 8, 2025 - Milestone Notes & Customer Name-Based API
 - **Inline Notes Editing**: Added real-time editing capability for journey milestone notes with hover-to-edit interface

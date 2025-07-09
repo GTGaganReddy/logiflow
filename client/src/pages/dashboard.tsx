@@ -24,9 +24,9 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <Truck className="text-primary text-2xl" />
-                <h1 className="text-2xl font-bold text-neutral-800">LogiFlow</h1>
+                <h1 className="text-2xl font-bold text-neutral-800">BubbleGPT Full Truck Load</h1>
               </div>
-              <span className="text-neutral-500 text-sm">Customer Load Management</span>
+              <span className="text-neutral-500 text-sm">Logistics Dashboard</span>
             </div>
             <div className="flex items-center space-x-4">
               <Button onClick={() => setIsAddModalOpen(true)} className="flex items-center space-x-2">
