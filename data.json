@@ -127,6 +127,40 @@
       "deliveryStartTime": null,
       "deliveryEndTime": null,
       "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "EXT-1752050237099",
+      "customerName": "Test AI Priority Customer",
+      "algoAssignedResource": "TRK-006",
+      "priority": "medium",
+      "remark": "Standard delivery",
+      "remarkPriority": "high",
+      "id": 48,
+      "location": null,
+      "humanReservedResource": null,
+      "createdAt": "2025-07-09T08:37:17.100Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
+    },
+    {
+      "slNo": "EXT-1752050253132",
+      "customerName": "Full AI Test Customer",
+      "algoAssignedResource": "TRK-007",
+      "humanReservedResource": "TRK-HUMAN-001",
+      "priority": "low",
+      "remark": "Standard delivery",
+      "remarkPriority": "high",
+      "id": 49,
+      "location": null,
+      "createdAt": "2025-07-09T08:37:33.132Z",
+      "deliveryStartDate": null,
+      "deliveryEndDate": null,
+      "deliveryStartTime": null,
+      "deliveryEndTime": null,
+      "deliveryStatus": "pending"
     }
   ],
   "trucks": [
