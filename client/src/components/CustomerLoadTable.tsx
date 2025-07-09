@@ -62,13 +62,20 @@ export default function CustomerLoadTable() {
   const acceptResourceMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
       // Only proceed if human resource is assigned
-      if (!load.humanReservedResource) {
-        throw new Error("Cannot accept assignment without human reserved resource");
+      if (!load.humanReservedResource || !load.algoAssignedResource) {
+        throw new Error("Cannot accept - both AI and human resources must be assigned");
       }
       
-      // Update the customer load to remove algo assigned resource
+      // Store original algo assignment in remark for revert capability
+      const originalRemark = load.remark || '';
+      const remarkWithOriginal = originalRemark ? 
+        `${originalRemark} [Original algo: ${load.algoAssignedResource}]` : 
+        `[Original algo: ${load.algoAssignedResource}]`;
+      
+      // Update the customer load to remove algo assigned resource but keep human
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
         algoAssignedResource: null,
+        remark: remarkWithOriginal,
         // Keep human reserved resource as is
       });
     },
@@ -91,15 +98,22 @@ export default function CustomerLoadTable() {
 
   const revertResourceMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
-      // Only proceed if human resource is assigned and algo resource is null
-      if (!load.humanReservedResource || load.algoAssignedResource) {
-        throw new Error("Cannot revert - original state not available");
+      // Extract original algo assignment from remark
+      const remarkMatch = load.remark?.match(/\[Original algo: ([^\]]+)\]/);
+      if (!remarkMatch) {
+        throw new Error("Cannot revert - original algorithm assignment not found");
       }
       
-      // Restore the algorithm assignment and clear human assignment
+      const originalAlgo = remarkMatch[1];
+      
+      // Clean the remark by removing the original algo notation
+      const cleanedRemark = load.remark?.replace(/\s*\[Original algo: [^\]]+\]/, '') || '';
+      
+      // Restore the algorithm assignment and keep human assignment
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        algoAssignedResource: load.humanReservedResource, // Move human to algo
-        humanReservedResource: null,
+        algoAssignedResource: originalAlgo,
+        remark: cleanedRemark,
+        // Keep human reserved resource as is
       });
     },
     onSuccess: () => {
@@ -107,7 +121,7 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Assignment reverted - Restored to AI suggestion",
+        description: "Assignment reverted - Restored original AI suggestion",
       });
     },
     onError: (error: Error) => {
@@ -458,7 +472,7 @@ export default function CustomerLoadTable() {
                               </TooltipContent>
                             </Tooltip>
                           )}
-                          {load.humanReservedResource && !load.algoAssignedResource && (
+                          {load.humanReservedResource && !load.algoAssignedResource && load.remark?.includes('[Original algo:') && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
