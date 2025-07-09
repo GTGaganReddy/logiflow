@@ -365,8 +365,12 @@ export default function CustomerLoadTable() {
                 ) : (
                   filteredLoads.map((load) => {
                     // Check if this load has AI suggestions (pending or accepted)
-                    const hasPendingAISuggestions = Boolean(load.remarkPriority || load.humanReservedResource);
-                    const hasAcceptedAISuggestions = Boolean((load.aiAcceptanceCount && load.aiAcceptanceCount > 0) || (load.remark && (load.remark.includes('[Original priority:') || load.remark.includes('[Original algo:'))));
+                    const hasPendingAISuggestions = Boolean(load.remarkPriority || (load.humanReservedResource && load.algoAssignedResource));
+                    const hasAcceptedAISuggestions = Boolean(
+                      (load.aiAcceptanceCount && load.aiAcceptanceCount > 0) || 
+                      (load.remark && (load.remark.includes('[Original priority:') || load.remark.includes('[Original algo:'))) ||
+                      (load.humanReservedResource && !load.algoAssignedResource && load.remark && load.remark.includes('[Original algo:'))
+                    );
                     const hasAnyAISuggestions = hasPendingAISuggestions || hasAcceptedAISuggestions;
                     
                     return (
