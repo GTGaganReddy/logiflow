@@ -364,12 +364,14 @@ export default function CustomerLoadTable() {
                   </TableRow>
                 ) : (
                   filteredLoads.map((load) => {
-                    // Check if this load has AI suggestions
-                    const hasAISuggestions = load.remarkPriority || load.humanReservedResource;
+                    // Check if this load has AI suggestions (pending or accepted)
+                    const hasPendingAISuggestions = Boolean(load.remarkPriority || load.humanReservedResource);
+                    const hasAcceptedAISuggestions = Boolean((load.aiAcceptanceCount && load.aiAcceptanceCount > 0) || (load.remark && (load.remark.includes('[Original priority:') || load.remark.includes('[Original algo:'))));
+                    const hasAnyAISuggestions = hasPendingAISuggestions || hasAcceptedAISuggestions;
                     
                     return (
                     <React.Fragment key={load.id}>
-                      <TableRow className={`hover:bg-neutral-50 ${hasAISuggestions ? 'bg-blue-50 border-l-4 border-l-blue-400' : ''}`}>
+                      <TableRow className={`hover:bg-neutral-50 ${hasPendingAISuggestions ? 'bg-blue-50 border-l-4 border-l-blue-400' : hasAcceptedAISuggestions ? 'bg-green-50 border-l-4 border-l-green-400' : ''}`}>
                         <TableCell className="p-2">
                           <Button 
                             variant="ghost" 
@@ -393,9 +395,13 @@ export default function CustomerLoadTable() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center space-x-1">
                               <p className="text-sm font-medium text-neutral-900 truncate">{load.customerName}</p>
-                              {(load.remarkPriority || load.humanReservedResource) && (
-                                <Badge variant="outline" className="text-xs text-blue-600 border-blue-600 bg-blue-50 px-1">
-                                  AI
+                              {hasAnyAISuggestions && (
+                                <Badge variant="outline" className={`text-xs px-1 ${
+                                  hasPendingAISuggestions 
+                                    ? 'text-blue-600 border-blue-600 bg-blue-50' 
+                                    : 'text-green-600 border-green-600 bg-green-50'
+                                }`}>
+                                  {hasPendingAISuggestions ? 'AI' : 'AI ✓'}
                                 </Badge>
                               )}
                             </div>
