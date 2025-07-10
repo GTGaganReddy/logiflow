@@ -78,8 +78,16 @@ export default function CustomerLoadTable() {
       
       // Accept AI resource suggestion if available
       if (load.aiSuggestionResource) {
-        updates.algoAssignedResource = load.aiSuggestionResource;
+        // Store original algorithm resource in remark for revert capability
+        const originalAlgo = load.algoAssignedResource;
+        if (originalAlgo) {
+          updates.remark = load.remark ? `${load.remark} [Original algo: ${originalAlgo}]` : `[Original algo: ${originalAlgo}]`;
+        }
+        
+        // Replace algorithm resource with AI suggestion and hide it (it should disappear)
+        updates.algoAssignedResource = null; // Algorithm resource disappears
         updates.aiSuggestionAccepted = true;
+        updates.aiSuggestionResource = null; // Clear the suggestion
       }
       
       // Accept AI priority suggestion if available
@@ -126,7 +134,13 @@ export default function CustomerLoadTable() {
       
       // Revert AI resource suggestion if accepted
       if (hasAcceptedResource) {
-        updates.algoAssignedResource = null;
+        // Restore original algorithm resource from remark
+        const algoMatch = load.remark?.match(/\[Original algo: ([^\]]+)\]/);
+        if (algoMatch) {
+          const originalAlgo = algoMatch[1];
+          updates.algoAssignedResource = originalAlgo; // Algorithm resource reappears
+          updates.remark = load.remark?.replace(/\s*\[Original algo: [^\]]+\]/, '') || '';
+        }
         updates.aiSuggestionAccepted = false;
       }
       
@@ -377,10 +391,17 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="text-xs">
-                          {load.aiSuggestionAccepted && load.algoAssignedResource ? (
+                          {/* Algorithm resource logic:
+                              - Show current algoAssignedResource if no AI suggestions accepted for resources
+                              - Show AI suggestion resource if pending
+                              - Hide algorithm resource if AI suggestions were accepted (disappears)
+                          */}
+                          {load.algoAssignedResource && !load.aiSuggestionAccepted ? (
                             <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
-                          ) : load.algoAssignedResource ? (
-                            <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
+                          ) : load.aiSuggestionResource && hasPendingAISuggestions ? (
+                            <Badge className="bg-blue-500 text-white text-xs px-2 py-1">
+                              AI: {load.aiSuggestionResource}
+                            </Badge>
                           ) : (
                             <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
                           )}
@@ -389,7 +410,13 @@ export default function CustomerLoadTable() {
                       <TableCell className="p-2">
                         <div className="text-xs">
                           {load.humanReservedResource ? (
-                            <Badge className="bg-primary text-white text-xs px-2 py-1">{load.humanReservedResource}</Badge>
+                            <Badge 
+                              className={`bg-primary text-white text-xs px-2 py-1 ${
+                                hasPendingAISuggestions ? 'opacity-50 blur-[1px]' : ''
+                              }`}
+                            >
+                              {load.humanReservedResource}
+                            </Badge>
                           ) : (
                             <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
                           )}

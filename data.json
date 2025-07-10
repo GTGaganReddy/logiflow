@@ -25,7 +25,7 @@
     {
       "slNo": "2",
       "customerName": "Wiener Stahlwerk GmbH",
-      "algoAssignedResource": "W-345MN",
+      "algoAssignedResource": null,
       "priority": "high",
       "deliveryStartDate": "2025-07-12",
       "deliveryEndDate": "2025-07-12",
@@ -41,7 +41,8 @@
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
       "aiSuggestionResource": "T-998KL",
-      "remarkPriority": "medium"
+      "remarkPriority": "medium",
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "3",
