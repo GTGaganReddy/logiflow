@@ -96,6 +96,11 @@ export default function CustomerLoadTable() {
         updates.priority = load.remarkPriority;
         updates.remarkPriority = null;
         updates.remark = load.remark ? `${load.remark} [Original priority: ${originalPriority}]` : `[Original priority: ${originalPriority}]`;
+        
+        // Assign algorithm resource when priority is accepted (for Blautal type loads)
+        if (!load.algoAssignedResource && !load.aiSuggestionResource) {
+          updates.algoAssignedResource = `B-${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+        }
       }
       
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, updates);
@@ -158,6 +163,11 @@ export default function CustomerLoadTable() {
           updates.priority = originalPriority;
           updates.remarkPriority = currentPriority; // Current priority becomes the AI suggestion
           updates.remark = load.remark?.replace(/\s*\[Original priority: [^\]]+\]/, '') || '';
+          
+          // Remove algorithm resource if it was assigned during priority acceptance (for Blautal type loads)
+          if (load.algoAssignedResource && load.algoAssignedResource.startsWith('B-') && !load.aiSuggestionResource) {
+            updates.algoAssignedResource = null;
+          }
         }
       }
       
