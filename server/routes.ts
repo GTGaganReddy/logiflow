@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertCustomerLoadSchema, insertTruckSchema, insertJourneyMilestoneSchema } from "@shared/schema";
 import { z } from "zod";
+import { createThread, sendMessage, createAssistant } from "./openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Customer Loads routes
@@ -621,6 +622,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Failed to update customer load" 
       });
+    }
+  });
+
+  // AI Assistant routes
+  app.post("/api/ai/create-thread", async (req, res) => {
+    try {
+      const { customerLoad, assistantId } = req.body;
+      const result = await createThread({ customerLoad, assistantId });
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating AI thread:", error);
+      res.status(500).json({ message: "Failed to create AI thread" });
+    }
+  });
+
+  app.post("/api/ai/send-message", async (req, res) => {
+    try {
+      const { threadId, message, assistantId } = req.body;
+      const result = await sendMessage({ threadId, message, assistantId });
+      res.json(result);
+    } catch (error) {
+      console.error("Error sending AI message:", error);
+      res.status(500).json({ message: "Failed to send message to AI" });
+    }
+  });
+
+  app.post("/api/ai/create-assistant", async (req, res) => {
+    try {
+      const assistant = await createAssistant();
+      res.json({ assistantId: assistant.id, assistant });
+    } catch (error) {
+      console.error("Error creating AI assistant:", error);
+      res.status(500).json({ message: "Failed to create AI assistant" });
     }
   });
 

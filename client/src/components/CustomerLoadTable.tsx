@@ -7,19 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight, Check, Undo2 } from "lucide-react";
+import { Edit, Trash2, Truck, Search, Filter, ArrowUpDown, Download, Calendar, Clock, ChevronDown, ChevronRight, Check, Undo2, MessageCircle } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { CustomerLoad } from "@shared/schema";
 import JourneyMilestones from "./JourneyMilestones";
+import AIChatbot from "./AIChatbot";
 
 export default function CustomerLoadTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [aiChatbot, setAiChatbot] = useState<{ isOpen: boolean; customerLoad: CustomerLoad | null }>({
+    isOpen: false,
+    customerLoad: null
+  });
   const { toast } = useToast();
 
   const toggleRowExpansion = (loadId: number) => {
@@ -292,7 +297,7 @@ export default function CustomerLoadTable() {
   }
 
   return (
-    <>
+    <TooltipProvider>
       {/* Filter and Search */}
       <Card className="mb-4">
         <CardContent className="p-3">
@@ -415,7 +420,22 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="text-xs">
-                          {load.algoAssignedResource ? (
+                          {load.aiSuggestionResource ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge 
+                                  className="bg-blue-500 text-white text-xs px-2 py-1 cursor-pointer hover:bg-blue-600"
+                                  onClick={() => setAiChatbot({ isOpen: true, customerLoad: load })}
+                                >
+                                  {load.aiSuggestionResource}
+                                  <MessageCircle className="h-3 w-3 ml-1 inline" />
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>AI suggested resource - Click to chat about this assignment</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : load.algoAssignedResource ? (
                             <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
                           ) : (
                             <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
@@ -602,6 +622,16 @@ export default function CustomerLoadTable() {
           )}
         </CardContent>
       </Card>
-    </>
+      
+      {/* AI Chatbot */}
+      {aiChatbot.customerLoad && (
+        <AIChatbot
+          isOpen={aiChatbot.isOpen}
+          onClose={() => setAiChatbot({ isOpen: false, customerLoad: null })}
+          customerLoad={aiChatbot.customerLoad}
+          assistantId={aiChatbot.customerLoad.aiAssistantId}
+        />
+      )}
+    </TooltipProvider>
   );
 }

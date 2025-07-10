@@ -20,6 +20,9 @@ export const customerLoads = pgTable("customer_loads", {
   deliveryStartTime: text("delivery_start_time"),
   deliveryEndTime: text("delivery_end_time"),
   deliveryStatus: text("delivery_status").notNull().default("pending"), // pending, in-progress, completed, cancelled
+  aiSuggestionAccepted: boolean("ai_suggestion_accepted").default(false),
+  aiSuggestionResource: text("ai_suggestion_resource"),
+  aiAssistantId: text("ai_assistant_id"),
 });
 
 export const journeyMilestones = pgTable("journey_milestones", {
