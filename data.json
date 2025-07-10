@@ -40,7 +40,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "AI-XTO4ZH",
+      "aiSuggestionResource": "AI-W9UX19",
       "aiSuggestionAccepted": false
     },
     {
@@ -61,7 +61,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "AI-D3NM4T",
+      "aiSuggestionResource": "AI-DHQ3VR",
       "aiSuggestionAccepted": false
     },
     {
@@ -76,8 +76,8 @@
       "humanReservedResource": null,
       "remark": null,
       "createdAt": "2025-07-09T06:58:21.396Z",
-      "deliveryEndDate": null,
-      "deliveryEndTime": null,
+      "deliveryEndDate": "2025-07-15",
+      "deliveryEndTime": "17:00",
       "deliveryStatus": "assigned",
       "aiAcceptanceCount": 0,
       "incentivePoints": 0
@@ -94,8 +94,8 @@
       "humanReservedResource": null,
       "remark": null,
       "createdAt": "2025-07-09T06:58:28.612Z",
-      "deliveryEndDate": null,
-      "deliveryEndTime": null,
+      "deliveryEndDate": "2025-07-16",
+      "deliveryEndTime": "18:30",
       "deliveryStatus": "assigned",
       "aiAcceptanceCount": 0,
       "incentivePoints": 0
@@ -131,8 +131,8 @@
       "humanReservedResource": null,
       "remark": null,
       "createdAt": "2025-07-09T06:58:44.966Z",
-      "deliveryEndDate": null,
-      "deliveryEndTime": null,
+      "deliveryEndDate": "2025-07-18",
+      "deliveryEndTime": "19:00",
       "deliveryStatus": "assigned",
       "aiAcceptanceCount": 0,
       "incentivePoints": 0
