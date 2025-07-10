@@ -190,8 +190,16 @@ const BackhaulOptimizer = () => {
     }
   };
 
-  const handleAcceptPickup = (pickupId: string) => {
-    setAcceptedPickups(prev => new Set([...prev, pickupId]));
+  const handleTogglePickup = (pickupId: string) => {
+    setAcceptedPickups(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(pickupId)) {
+        newSet.delete(pickupId);
+      } else {
+        newSet.add(pickupId);
+      }
+      return newSet;
+    });
   };
 
   const isPickupAccepted = (pickupId: string) => {
@@ -334,14 +342,18 @@ const BackhaulOptimizer = () => {
                         
                         <div className="ml-4">
                           {isPickupAccepted(pickup.id) ? (
-                            <Badge className="bg-green-600 text-white">
+                            <Button
+                              size="sm"
+                              onClick={() => handleTogglePickup(pickup.id)}
+                              className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs"
+                            >
                               <Check className="h-3 w-3 mr-1" />
                               Accepted
-                            </Badge>
+                            </Button>
                           ) : (
                             <Button
                               size="sm"
-                              onClick={() => handleAcceptPickup(pickup.id)}
+                              onClick={() => handleTogglePickup(pickup.id)}
                               className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
                             >
                               <Check className="h-3 w-3 mr-1" />
