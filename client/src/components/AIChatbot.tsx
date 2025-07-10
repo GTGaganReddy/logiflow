@@ -155,8 +155,8 @@ Would you like me to explain why this specific resource was chosen or how the pr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-blue-600" />
             AI Assignment Explanation
@@ -166,8 +166,8 @@ Would you like me to explain why this specific resource was chosen or how the pr
           </DialogTitle>
         </DialogHeader>
         
-        <div className="flex-1 flex flex-col gap-4">
-          <ScrollArea className="flex-1 pr-4">
+        <div className="flex-1 flex flex-col min-h-0">
+          <ScrollArea className="flex-1 px-6 py-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -193,7 +193,7 @@ Would you like me to explain why this specific resource was chosen or how the pr
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      <p className="whitespace-pre-wrap break-words">{message.content}</p>
                       <p className="text-xs mt-1 opacity-70">
                         {message.timestamp.toLocaleTimeString()}
                       </p>
@@ -220,22 +220,24 @@ Would you like me to explain why this specific resource was chosen or how the pr
             </div>
           </ScrollArea>
           
-          <div className="flex gap-2">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about this AI assignment..."
-              disabled={isLoading}
-              className="flex-1"
-            />
-            <Button
-              onClick={sendMessage}
-              disabled={isLoading || !inputMessage.trim()}
-              size="sm"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
+          <div className="border-t px-6 py-4">
+            <div className="flex gap-2">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about this AI assignment..."
+                disabled={isLoading}
+                className="flex-1"
+              />
+              <Button
+                onClick={sendMessage}
+                disabled={isLoading || !inputMessage.trim()}
+                size="sm"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
