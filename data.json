@@ -19,14 +19,14 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiSuggestionAccepted": false,
-      "aiSuggestionResource": "W-792XY",
+      "aiSuggestionResource": null,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst"
     },
     {
       "slNo": "2",
       "customerName": "Wiener Stahlwerk GmbH",
-      "algoAssignedResource": null,
-      "priority": "medium",
+      "algoAssignedResource": "W-345MN",
+      "priority": "high",
       "deliveryStartDate": "2025-07-12",
       "deliveryEndDate": "2025-07-12",
       "deliveryStartTime": "06:15:00",
@@ -34,15 +34,14 @@
       "id": 41,
       "location": null,
       "humanReservedResource": "Z-1645NH",
-      "remark": "Notepad assignment found, swap recommended. [Original priority: high]",
+      "remark": "Notepad assignment found, swap recommended.",
       "createdAt": "2025-07-09T00:51:06.814Z",
       "deliveryStatus": "assigned",
-      "aiAcceptanceCount": 2,
-      "incentivePoints": 4,
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": null,
-      "remarkPriority": null,
-      "aiSuggestionAccepted": true
+      "aiSuggestionResource": "T-998KL",
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "3",
@@ -62,8 +61,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "F-445RT",
-      "remarkPriority": "high"
+      "aiSuggestionResource": "F-445RT"
     },
     {
       "slNo": "EXT-1752044301394",
