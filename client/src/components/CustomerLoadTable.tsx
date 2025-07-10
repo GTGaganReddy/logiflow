@@ -409,8 +409,7 @@ export default function CustomerLoadTable() {
                           {/* Algorithm resource logic:
                               - Show current algoAssignedResource if no AI suggestions accepted for resources
                               - Show AI suggestion resource if pending
-                              - Show human resource in algorithm column if AI suggestions were accepted (resource swap)
-                              - Hide algorithm resource if AI suggestions were accepted and no human resource
+                              - Hide algorithm resource if AI suggestions were accepted (resource swap)
                           */}
                           {load.algoAssignedResource && !load.aiSuggestionAccepted ? (
                             <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
@@ -418,8 +417,6 @@ export default function CustomerLoadTable() {
                             <Badge className="bg-blue-500 text-white text-xs px-2 py-1">
                               AI: {load.aiSuggestionResource}
                             </Badge>
-                          ) : load.aiSuggestionAccepted && load.humanReservedResource ? (
-                            <Badge className="bg-primary text-white text-xs px-2 py-1">{load.humanReservedResource}</Badge>
                           ) : (
                             <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
                           )}
@@ -428,14 +425,14 @@ export default function CustomerLoadTable() {
                       <TableCell className="p-2">
                         <div className="text-xs">
                           {/* Human Resource logic:
-                              - Show blurred if AI suggestions are pending
-                              - Hide if AI suggestions were accepted (moves to algorithm column)
-                              - Show normally if no AI suggestions or not accepted
+                              - Show blurred if AI suggestions are pending and not accepted
+                              - Show unblurred if AI suggestions are accepted
+                              - Show normally if no AI suggestions
                           */}
-                          {load.humanReservedResource && !load.aiSuggestionAccepted ? (
+                          {load.humanReservedResource ? (
                             <Badge 
                               className={`bg-primary text-white text-xs px-2 py-1 ${
-                                hasPendingAISuggestions ? 'opacity-50 blur-[1px]' : ''
+                                hasPendingAISuggestions && !load.aiSuggestionAccepted ? 'opacity-50 blur-[1px]' : ''
                               }`}
                             >
                               {load.humanReservedResource}
