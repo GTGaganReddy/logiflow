@@ -381,18 +381,20 @@ export default function CustomerLoadTable() {
                               {hasAnyAISuggestions && (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Badge 
-                                      variant="outline" 
-                                      className={`text-xs px-1.5 py-0.5 whitespace-nowrap cursor-pointer hover:opacity-80 ${
-                                        hasPendingAISuggestions 
-                                          ? 'text-blue-600 border-blue-600 bg-blue-50' 
-                                          : 'text-green-600 border-green-600 bg-green-50'
-                                      }`}
-                                      onClick={() => setAiChatbot({ isOpen: true, customerLoad: load })}
-                                    >
-                                      {hasPendingAISuggestions ? 'AI' : 'AI ✓'}
-                                      <MessageCircle className="h-3 w-3 ml-1 inline" />
-                                    </Badge>
+                                    <div className="inline-block">
+                                      <Badge 
+                                        variant="outline" 
+                                        className={`text-xs px-1.5 py-0.5 whitespace-nowrap cursor-pointer hover:opacity-80 ${
+                                          hasPendingAISuggestions 
+                                            ? 'text-blue-600 border-blue-600 bg-blue-50' 
+                                            : 'text-green-600 border-green-600 bg-green-50'
+                                        }`}
+                                        onClick={() => setAiChatbot({ isOpen: true, customerLoad: load })}
+                                      >
+                                        {hasPendingAISuggestions ? 'AI' : 'AI ✓'}
+                                        <MessageCircle className="h-3 w-3 ml-1 inline" />
+                                      </Badge>
+                                    </div>
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     <div className="max-w-xs">
