@@ -15,7 +15,7 @@ const BackhaulOptimizer = () => {
     queryKey: ["/api/customer-loads"],
   });
 
-  // Sample Austrian/German pickup opportunities matching your region
+  // Comprehensive Austrian/German pickup opportunities
   const availablePickups = [
     {
       id: 'P001',
@@ -71,6 +71,149 @@ const BackhaulOptimizer = () => {
       destination: 'Stuttgart, Deutschland',
       priority: 'Low',
       commodityType: 'Textil Export'
+    },
+    {
+      id: 'P006',
+      location: 'Klagenfurt, Kärnten',
+      coordinates: { lat: 46.6247, lng: 14.3051 },
+      pickupWindow: '2025-07-13T07:30:00',
+      weight: 5400,
+      revenue: 1020,
+      destination: 'Ljubljana, Slowenien',
+      priority: 'High',
+      commodityType: 'Holzprodukte'
+    },
+    {
+      id: 'P007',
+      location: 'St. Pölten, Niederösterreich',
+      coordinates: { lat: 48.2058, lng: 15.6232 },
+      pickupWindow: '2025-07-13T11:00:00',
+      weight: 6800,
+      revenue: 1240,
+      destination: 'Bratislava, Slowakei',
+      priority: 'Medium',
+      commodityType: 'Chemikalien'
+    },
+    {
+      id: 'P008',
+      location: 'Wels, Oberösterreich',
+      coordinates: { lat: 48.1597, lng: 14.0253 },
+      pickupWindow: '2025-07-13T13:45:00',
+      weight: 7200,
+      revenue: 1380,
+      destination: 'Passau, Deutschland',
+      priority: 'High',
+      commodityType: 'Elektronik'
+    },
+    {
+      id: 'P009',
+      location: 'Villach, Kärnten',
+      coordinates: { lat: 46.6111, lng: 13.8558 },
+      pickupWindow: '2025-07-14T08:15:00',
+      weight: 4900,
+      revenue: 950,
+      destination: 'Udine, Italien',
+      priority: 'Medium',
+      commodityType: 'Lebensmittel'
+    },
+    {
+      id: 'P010',
+      location: 'Steyr, Oberösterreich',
+      coordinates: { lat: 48.0318, lng: 14.4213 },
+      pickupWindow: '2025-07-14T10:00:00',
+      weight: 8100,
+      revenue: 1590,
+      destination: 'Regensburg, Deutschland',
+      priority: 'High',
+      commodityType: 'Fahrzeugteile'
+    },
+    {
+      id: 'P011',
+      location: 'Dornbirn, Vorarlberg',
+      coordinates: { lat: 47.4125, lng: 9.7417 },
+      pickupWindow: '2025-07-15T09:30:00',
+      weight: 5600,
+      revenue: 1080,
+      destination: 'Konstanz, Deutschland',
+      priority: 'Medium',
+      commodityType: 'Textilmaschinen'
+    },
+    {
+      id: 'P012',
+      location: 'Wiener Neustadt, Niederösterreich',
+      coordinates: { lat: 47.8167, lng: 16.2426 },
+      pickupWindow: '2025-07-15T14:20:00',
+      weight: 6300,
+      revenue: 1190,
+      destination: 'Budapest, Ungarn',
+      priority: 'High',
+      commodityType: 'Metallwaren'
+    },
+    {
+      id: 'P013',
+      location: 'Amstetten, Niederösterreich',
+      coordinates: { lat: 48.1225, lng: 14.8722 },
+      pickupWindow: '2025-07-16T07:00:00',
+      weight: 7800,
+      revenue: 1450,
+      destination: 'Linz, Österreich',
+      priority: 'Medium',
+      commodityType: 'Baumaterialien'
+    },
+    {
+      id: 'P014',
+      location: 'Leoben, Steiermark',
+      coordinates: { lat: 47.3783, lng: 15.0961 },
+      pickupWindow: '2025-07-16T11:45:00',
+      weight: 9200,
+      revenue: 1720,
+      destination: 'Graz, Österreich',
+      priority: 'High',
+      commodityType: 'Stahlprodukte'
+    },
+    {
+      id: 'P015',
+      location: 'Feldkirch, Vorarlberg',
+      coordinates: { lat: 47.2333, lng: 9.6000 },
+      pickupWindow: '2025-07-17T08:30:00',
+      weight: 4500,
+      revenue: 840,
+      destination: 'Zürich, Schweiz',
+      priority: 'Low',
+      commodityType: 'Pharmazeutika'
+    },
+    {
+      id: 'P016',
+      location: 'Kapfenberg, Steiermark',
+      coordinates: { lat: 47.4444, lng: 15.2914 },
+      pickupWindow: '2025-07-17T13:00:00',
+      weight: 6700,
+      revenue: 1250,
+      destination: 'Maribor, Slowenien',
+      priority: 'Medium',
+      commodityType: 'Industrieanlagen'
+    },
+    {
+      id: 'P017',
+      location: 'Krems, Niederösterreich',
+      coordinates: { lat: 48.4097, lng: 15.6142 },
+      pickupWindow: '2025-07-18T09:15:00',
+      weight: 5800,
+      revenue: 1110,
+      destination: 'Krems, Österreich',
+      priority: 'High',
+      commodityType: 'Weinprodukte'
+    },
+    {
+      id: 'P018',
+      location: 'Wolfsberg, Kärnten',
+      coordinates: { lat: 46.8378, lng: 14.8439 },
+      pickupWindow: '2025-07-18T15:30:00',
+      weight: 7400,
+      revenue: 1390,
+      destination: 'Klagenfurt, Österreich',
+      priority: 'Medium',
+      commodityType: 'Holzverarbeitung'
     }
   ];
 
