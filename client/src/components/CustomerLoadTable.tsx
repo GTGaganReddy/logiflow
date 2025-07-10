@@ -135,8 +135,9 @@ export default function CustomerLoadTable() {
         const remarkMatch = load.remark?.match(/\[Original priority: ([^\]]+)\]/);
         if (remarkMatch) {
           const originalPriority = remarkMatch[1];
+          const currentPriority = load.priority;
           updates.priority = originalPriority;
-          updates.remarkPriority = load.remarkPriority; // Restore AI suggestion
+          updates.remarkPriority = currentPriority; // Current priority becomes the AI suggestion
           updates.remark = load.remark?.replace(/\s*\[Original priority: [^\]]+\]/, '') || '';
         }
       }
