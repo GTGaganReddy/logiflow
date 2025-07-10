@@ -167,7 +167,7 @@ Would you like me to explain why this specific resource was chosen or how the pr
         </DialogHeader>
         
         <div className="flex-1 flex flex-col min-h-0">
-          <ScrollArea className="flex-1 px-6 py-4">
+          <div className="flex-1 overflow-y-auto px-6 py-4">
             <div className="space-y-4">
               {messages.map((message) => (
                 <div
@@ -218,7 +218,7 @@ Would you like me to explain why this specific resource was chosen or how the pr
               )}
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
           
           <div className="border-t px-6 py-4">
             <div className="flex gap-2">
