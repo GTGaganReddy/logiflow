@@ -46,10 +46,10 @@
     {
       "slNo": "3",
       "customerName": "Salzburger Logistik Service",
-      "algoAssignedResource": null,
+      "algoAssignedResource": "S-678PQ",
       "humanReservedResource": "N-2548GT",
       "priority": "medium",
-      "remark": "Notepad assignment found, swap recommended. [Original algo: S-678PQ]",
+      "remark": "Notepad assignment found, swap recommended.",
       "deliveryStartDate": "2025-07-13",
       "deliveryEndDate": "2025-07-13",
       "deliveryStartTime": "08:00:00",
@@ -58,11 +58,11 @@
       "location": null,
       "createdAt": "2025-07-09T00:51:13.638Z",
       "deliveryStatus": "assigned",
-      "aiAcceptanceCount": 2,
-      "incentivePoints": 4,
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": null,
-      "aiSuggestionAccepted": true
+      "aiSuggestionResource": "AI-6H5XLI",
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "EXT-1752044301394",
