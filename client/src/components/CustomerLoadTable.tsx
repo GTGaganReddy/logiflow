@@ -399,9 +399,9 @@ export default function CustomerLoadTable() {
                                   <TooltipContent>
                                     <div className="max-w-xs">
                                       {load.remarkPriority && load.aiSuggestionResource ? (
-                                        <p>AI suggests to accept the priority adjustment and resource swap as preferred truck is available</p>
+                                        <p>AI suggests to accept the priority adjustment based on coordinator feedback from 2 weeks ago and resource swap as preferred truck is available</p>
                                       ) : load.remarkPriority ? (
-                                        <p>AI suggests to accept the priority adjustment as a resource will be assigned</p>
+                                        <p>AI suggests to accept the priority adjustment based on coordinator feedback from 2 weeks ago</p>
                                       ) : load.aiSuggestionResource && load.remark?.includes('swap recommended') ? (
                                         <p>Information was fetched from the notepad and preferred truck is available</p>
                                       ) : load.aiSuggestionResource ? (

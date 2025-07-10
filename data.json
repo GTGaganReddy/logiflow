@@ -25,7 +25,7 @@
     {
       "slNo": "2",
       "customerName": "Wiener Stahlwerk GmbH",
-      "algoAssignedResource": null,
+      "algoAssignedResource": "W-345MN",
       "priority": "high",
       "deliveryStartDate": "2025-07-12",
       "deliveryEndDate": "2025-07-12",
@@ -34,14 +34,14 @@
       "id": 41,
       "location": null,
       "humanReservedResource": "Z-1645NH",
-      "remark": "Notepad assignment found, swap recommended. [Original algo: W-345MN]",
+      "remark": "Notepad assignment found, swap recommended.",
       "createdAt": "2025-07-09T00:51:06.814Z",
       "deliveryStatus": "assigned",
-      "aiAcceptanceCount": 2,
-      "incentivePoints": 4,
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": null,
-      "aiSuggestionAccepted": true
+      "aiSuggestionResource": "AI-GTNARU",
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "3",
@@ -61,7 +61,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "AI-AWCEGI",
+      "aiSuggestionResource": "AI-RZQ8GK",
       "aiSuggestionAccepted": false
     },
     {
