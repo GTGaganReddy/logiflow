@@ -403,7 +403,7 @@ export default function CustomerLoadTable() {
                                       ) : load.remarkPriority ? (
                                         <p>AI suggests to accept the priority adjustment based on coordinator feedback from 2 weeks ago</p>
                                       ) : load.aiSuggestionResource && load.remark?.includes('swap recommended') ? (
-                                        <p>From Dynamic feedback Notepad where you made a request for "Human res licence number" - it's available</p>
+                                        <p>From Dynamic feedback Notepad where you made a request for "{load.humanReservedResource}" - it's available</p>
                                       ) : load.aiSuggestionResource ? (
                                         <p>AI suggests to accept the resource assignment as it optimizes delivery efficiency</p>
                                       ) : (
