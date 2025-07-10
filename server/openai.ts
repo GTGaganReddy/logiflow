@@ -97,12 +97,14 @@ Keep explanations clear and practical for logistics coordinators.`
     console.log('Created run:', run.id, 'for thread:', threadId);
 
     // Wait for completion with timeout
+    console.log('Before retrieve - threadId:', threadId, 'run.id:', run.id);
     let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
     let attempts = 0;
     const maxAttempts = 30; // 30 seconds timeout
     
     while ((runStatus.status === 'queued' || runStatus.status === 'in_progress') && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Before loop retrieve - threadId:', threadId, 'run.id:', run.id);
       runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
       attempts++;
       console.log(`Run status: ${runStatus.status}, attempt ${attempts}`);
