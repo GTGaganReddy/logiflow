@@ -3,7 +3,7 @@
     {
       "slNo": "1",
       "customerName": "Blautal Maschinenbau AG",
-      "algoAssignedResource": null,
+      "algoAssignedResource": "W-792XY",
       "priority": "low",
       "deliveryStartDate": "2025-07-11",
       "deliveryEndDate": "2025-07-12",
@@ -16,8 +16,8 @@
       "createdAt": "2025-07-09T00:51:00.704Z",
       "deliveryStatus": "pending",
       "remarkPriority": "high",
-      "aiAcceptanceCount": 1,
-      "incentivePoints": 2,
+      "aiAcceptanceCount": 2,
+      "incentivePoints": 4,
       "aiSuggestionAccepted": false,
       "aiSuggestionResource": null,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst"
@@ -40,7 +40,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "T-998KL",
+      "aiSuggestionResource": null,
       "aiSuggestionAccepted": false
     },
     {
@@ -61,7 +61,8 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "F-445RT"
+      "aiSuggestionResource": null,
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "EXT-1752044301394",
