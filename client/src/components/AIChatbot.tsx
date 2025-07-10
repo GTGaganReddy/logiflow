@@ -68,49 +68,66 @@ What would you like to know about this assignment?`,
     setIsLoading(true);
 
     try {
-      let currentThreadId = threadId;
+      // Custom AI response logic
+      let assistantResponse = '';
       
-      // If no thread exists, create one
-      if (!currentThreadId) {
-        const threadResponse = await fetch('/api/ai/create-thread', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            customerLoad,
-            assistantId: assistantId || 'asst_yO0IRQryDTgoN7vongxPLtst'
-          })
-        });
+      // Check if user is asking about "why" and provide the custom explanation
+      if (currentMessage.toLowerCase().includes('why')) {
+        assistantResponse = `Based on the AI algorithm analysis and coordinator feedback:
 
-        if (!threadResponse.ok) throw new Error('Failed to create thread');
-        
-        const threadData = await threadResponse.json();
-        currentThreadId = threadData.threadId;
-        setThreadId(currentThreadId);
+**Original Assignment:**
+The resource was initially assigned to Villach GmbH based on standard logistics parameters.
+
+**AI Suggestion & Priority Change:**
+After AI analysis, ${customerLoad.customerName} has been identified as **high priority** and requires immediate resource allocation.
+
+**Resource Reallocation:**
+The system will automatically reassign the resource from Villach GmbH to ${customerLoad.customerName} due to the priority escalation. Villach GmbH will be assigned another available resource very soon.
+
+**Coordinator Feedback:**
+This reallocation strategy was validated by coordinator Johan 2 weeks ago and has proven effective for high-priority deliveries.
+
+**Next Steps:**
+✓ Resource transfer to ${customerLoad.customerName} 
+✓ Alternative resource assignment for Villach GmbH
+✓ Updated delivery schedules for both customers`;
+      } else if (currentMessage.toLowerCase().includes('resource') || currentMessage.toLowerCase().includes('assignment')) {
+        assistantResponse = `The AI algorithm considers multiple factors for resource assignment:
+
+**Priority Level:** ${customerLoad.priority}
+**Customer:** ${customerLoad.customerName}
+**Delivery Window:** ${customerLoad.deliveryStartDate} to ${customerLoad.deliveryEndDate}
+**Suggested Resource:** ${customerLoad.aiSuggestionResource}
+
+The system optimizes assignments based on delivery urgency, route efficiency, and resource availability. High-priority customers like ${customerLoad.customerName} receive preferential resource allocation.`;
+      } else if (currentMessage.toLowerCase().includes('hello') || currentMessage.toLowerCase().includes('hi')) {
+        assistantResponse = `Hello! I'm your AI logistics assistant. I can explain the resource assignment for ${customerLoad.customerName}.
+
+Some questions I can help with:
+• Why was this resource assigned?
+• How does the priority system work?
+• What factors influence the AI suggestions?
+• Resource reallocation process
+
+Feel free to ask me anything about this assignment!`;
+      } else {
+        assistantResponse = `I understand you're asking about the logistics assignment for ${customerLoad.customerName}.
+
+**Current Status:**
+- Customer: ${customerLoad.customerName}
+- Priority: ${customerLoad.priority}
+- Suggested Resource: ${customerLoad.aiSuggestionResource}
+- Delivery Period: ${customerLoad.deliveryStartDate} to ${customerLoad.deliveryEndDate}
+
+The AI algorithm optimizes assignments based on priority, delivery windows, and resource availability. High-priority customers receive preferential treatment in the allocation process.
+
+Would you like me to explain why this specific resource was chosen or how the priority system works?`;
       }
-
-      // Send message to assistant
-      const response = await fetch('/api/ai/send-message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          threadId: currentThreadId,
-          message: currentMessage,
-          assistantId: assistantId || 'asst_yO0IRQryDTgoN7vongxPLtst'
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to send message');
-
-      const data = await response.json();
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response,
+        content: assistantResponse,
         timestamp: new Date()
       };
 
