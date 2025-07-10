@@ -64,145 +64,103 @@ export default function CustomerLoadTable() {
     },
   });
 
-  const acceptAISuggestionMutation = useMutation({
+  const acceptAllAISuggestionsMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
-      // Only proceed if AI suggestion is available
-      if (!load.aiSuggestionResource) {
-        throw new Error("No AI suggestion available");
+      // Check if there are any AI suggestions available
+      if (!load.aiSuggestionResource && !load.remarkPriority) {
+        throw new Error("No AI suggestions available");
       }
       
-      // Accept AI suggestion: assign the suggested resource as algo assigned
-      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        algoAssignedResource: load.aiSuggestionResource,
-        aiSuggestionAccepted: true,
+      const updates: any = {
         aiAcceptanceCount: (load.aiAcceptanceCount || 0) + 1,
         incentivePoints: (load.incentivePoints || 0) + 2,
-      });
+      };
+      
+      // Accept AI resource suggestion if available
+      if (load.aiSuggestionResource) {
+        updates.algoAssignedResource = load.aiSuggestionResource;
+        updates.aiSuggestionAccepted = true;
+      }
+      
+      // Accept AI priority suggestion if available
+      if (load.remarkPriority) {
+        const originalPriority = load.priority;
+        updates.priority = load.remarkPriority;
+        updates.remarkPriority = null;
+        updates.remark = load.remark ? `${load.remark} [Original priority: ${originalPriority}]` : `[Original priority: ${originalPriority}]`;
+      }
+      
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "AI suggestion accepted! +2 incentive points earned",
+        description: "AI suggestions accepted! +2 incentive points earned",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Error", 
-        description: error.message || "Failed to accept AI suggestion",
+        description: error.message || "Failed to accept AI suggestions",
         variant: "destructive",
       });
     },
   });
 
-  const revertAISuggestionMutation = useMutation({
+  const revertAllAISuggestionsMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
-      // Only proceed if AI suggestion was accepted
-      if (!load.aiSuggestionAccepted) {
-        throw new Error("No AI suggestion to revert");
+      // Check if there are any accepted AI suggestions to revert
+      const hasAcceptedResource = load.aiSuggestionAccepted;
+      const hasAcceptedPriority = load.remark?.includes('[Original priority:');
+      
+      if (!hasAcceptedResource && !hasAcceptedPriority) {
+        throw new Error("No AI suggestions to revert");
       }
       
-      // Revert AI suggestion: remove algo assignment and reset AI suggestion state
-      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        algoAssignedResource: null,
-        aiSuggestionAccepted: false,
+      const updates: any = {
         aiAcceptanceCount: Math.max((load.aiAcceptanceCount || 0) - 1, 0),
         incentivePoints: Math.max((load.incentivePoints || 0) - 2, 0),
-      });
+      };
+      
+      // Revert AI resource suggestion if accepted
+      if (hasAcceptedResource) {
+        updates.algoAssignedResource = null;
+        updates.aiSuggestionAccepted = false;
+      }
+      
+      // Revert AI priority suggestion if accepted
+      if (hasAcceptedPriority) {
+        const remarkMatch = load.remark?.match(/\[Original priority: ([^\]]+)\]/);
+        if (remarkMatch) {
+          const originalPriority = remarkMatch[1];
+          updates.priority = originalPriority;
+          updates.remarkPriority = load.remarkPriority; // Restore AI suggestion
+          updates.remark = load.remark?.replace(/\s*\[Original priority: [^\]]+\]/, '') || '';
+        }
+      }
+      
+      await apiRequest("PUT", `/api/customer-loads/${load.id}`, updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "AI suggestion reverted - Incentive points deducted",
+        description: "AI suggestions reverted - Incentive points deducted",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Error", 
-        description: error.message || "Failed to revert AI suggestion",
+        description: error.message || "Failed to revert AI suggestions",
         variant: "destructive",
       });
     },
   });
 
-  const acceptPriorityMutation = useMutation({
-    mutationFn: async (load: CustomerLoad) => {
-      // Only proceed if AI suggested priority is available
-      if (!load.remarkPriority) {
-        throw new Error("No AI suggested priority available");
-      }
-      
-      // Store original priority in remark for revert capability
-      const originalPriority = load.priority;
-      
-      // Update the customer load to change priority and clear AI suggestion
-      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        priority: load.remarkPriority,
-        remarkPriority: null,
-        remark: load.remark ? `${load.remark} [Original priority: ${originalPriority}]` : `[Original priority: ${originalPriority}]`,
-        aiAcceptanceCount: (load.aiAcceptanceCount || 0) + 1,
-        incentivePoints: (load.incentivePoints || 0) + 2,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
-      toast({
-        title: "Success",
-        description: "Priority change accepted! +2 incentive points earned",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error", 
-        description: error.message || "Failed to accept priority change",
-        variant: "destructive",
-      });
-    },
-  });
 
-  const revertPriorityMutation = useMutation({
-    mutationFn: async (load: CustomerLoad) => {
-      // Extract original priority from remark
-      const remarkMatch = load.remark?.match(/\[Original priority: (high|medium|low)\]/);
-      if (!remarkMatch) {
-        throw new Error("Cannot revert - original priority not found");
-      }
-      
-      const originalPriority = remarkMatch[1];
-      const currentPriority = load.priority;
-      
-      // Clean the remark by removing the original priority notation
-      const cleanedRemark = load.remark?.replace(/\s*\[Original priority: (high|medium|low)\]/, '') || '';
-      
-      // Update the customer load to revert priority and restore AI suggestion
-      await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        priority: originalPriority,
-        remarkPriority: currentPriority, // Current becomes the AI suggestion
-        remark: cleanedRemark,
-        aiAcceptanceCount: Math.max((load.aiAcceptanceCount || 0) - 1, 0),
-        incentivePoints: Math.max((load.incentivePoints || 0) - 2, 0),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/customer-loads"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
-      toast({
-        title: "Success",
-        description: "Priority change reverted - Incentive points deducted",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error", 
-        description: error.message || "Failed to revert priority change",
-        variant: "destructive",
-      });
-    },
-  });
 
   const filteredLoads = loads.filter((load) => {
     const matchesSearch = load.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -469,78 +427,40 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="flex items-center space-x-1">
-                          {/* AI Suggestion Accept/Revert buttons */}
-                          {load.aiSuggestionResource && !load.aiSuggestionAccepted && (
+                          {/* Single AI Suggestion Accept/Revert button */}
+                          {hasPendingAISuggestions && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
-                                  onClick={() => acceptAISuggestionMutation.mutate(load)}
-                                  disabled={acceptAISuggestionMutation.isPending}
+                                  onClick={() => acceptAllAISuggestionsMutation.mutate(load)}
+                                  disabled={acceptAllAISuggestionsMutation.isPending}
                                 >
                                   <Check className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Accept AI suggestion</p>
+                                <p>Accept all AI suggestions</p>
                               </TooltipContent>
                             </Tooltip>
                           )}
-                          {load.aiSuggestionAccepted && (
+                          {hasAcceptedAISuggestions && !hasPendingAISuggestions && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="p-1 h-6 w-6 text-orange-600 hover:bg-orange-100"
-                                  onClick={() => revertAISuggestionMutation.mutate(load)}
-                                  disabled={revertAISuggestionMutation.isPending}
+                                  onClick={() => revertAllAISuggestionsMutation.mutate(load)}
+                                  disabled={revertAllAISuggestionsMutation.isPending}
                                 >
                                   <Undo2 className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Revert AI suggestion</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                          
-                          {/* Priority Accept/Revert buttons */}
-                          {load.remarkPriority && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
-                                  onClick={() => acceptPriorityMutation.mutate(load)}
-                                  disabled={acceptPriorityMutation.isPending}
-                                >
-                                  <Check className="h-3 w-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Accept AI priority suggestion</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                          {!load.remarkPriority && load.remark?.includes('[Original priority:') && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="p-1 h-6 w-6 text-orange-600 hover:bg-orange-100"
-                                  onClick={() => revertPriorityMutation.mutate(load)}
-                                  disabled={revertPriorityMutation.isPending}
-                                >
-                                  <Undo2 className="h-3 w-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Revert priority change</p>
+                                <p>Revert all AI suggestions</p>
                               </TooltipContent>
                             </Tooltip>
                           )}
