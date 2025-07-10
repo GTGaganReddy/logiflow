@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { Truck, Package, MapPin, DollarSign, Clock, Route, AlertCircle } from 'lucide-react';
+
+const BackhaulOptimizer = () => {
+  const [deliveries, setDeliveries] = useState([]);
+  const [availablePickups, setAvailablePickups] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [selectedDelivery, setSelectedDelivery] = useState(null);
+
+  // Sample data - in production, this would come from your logistics API
+  const sampleDeliveries = [
+    {
+      id: 'D001',
+      destination: 'Chicago, IL',
+      coordinates: { lat: 41.8781, lng: -87.6298 },
+      deliveryTime: '2025-07-11T14:00:00',
+      truckCapacity: 26000, // kg
+      currentLoad: 18000, // kg
+      availableCapacity: 8000, // kg
+      truckType: 'Full Truck Load',
+      driverId: 'DRV001'
+    },
+    {
+      id: 'D002',
+      destination: 'Milwaukee, WI',
+      coordinates: { lat: 43.0389, lng: -87.9065 },
+      deliveryTime: '2025-07-11T16:30:00',
+      truckCapacity: 26000,
+      currentLoad: 22000,
+      availableCapacity: 4000,
+      truckType: 'Full Truck Load',
+      driverId: 'DRV002'
+    },
+    {
+      id: 'D003',
+      destination: 'Indianapolis, IN',
+      coordinates: { lat: 39.7684, lng: -86.1581 },
+      deliveryTime: '2025-07-11T10:00:00',
+      truckCapacity: 26000,
+      currentLoad: 15000,
+      availableCapacity: 11000,
+      truckType: 'Full Truck Load',
+      driverId: 'DRV003'
+    }
+  ];
+
+  const samplePickups = [
+    {
+      id: 'P001',
+      location: 'Gary, IN',
+      coordinates: { lat: 41.5934, lng: -87.3464 },
+      pickupWindow: '2025-07-12T08:00:00',
+      weight: 7500,
+      revenue: 1200,
+      destination: 'Detroit, MI',
+      priority: 'High',
+      commodityType: 'Electronics'
+    },
+    {
+      id: 'P002',
+      location: 'Rockford, IL',
+      coordinates: { lat: 42.2711, lng: -89.0940 },
+      pickupWindow: '2025-07-12T12:00:00',
+      weight: 3200,
+      revenue: 680,
+      destination: 'Minneapolis, MN',
+      priority: 'Medium',
+      commodityType: 'Textiles'
+    },
+    {
+      id: 'P003',
+      location: 'Fort Wayne, IN',
+      coordinates: { lat: 40.7259, lng: -85.1394 },
+      pickupWindow: '2025-07-12T10:30:00',
+      weight: 5800,
+      revenue: 950,
+      destination: 'Columbus, OH',
+      priority: 'High',
+      commodityType: 'Food Products'
+    },
+    {
+      id: 'P004',
+      location: 'Kenosha, WI',
+      coordinates: { lat: 42.5847, lng: -87.8212 },
+      pickupWindow: '2025-07-12T14:00:00',
+      weight: 9200,
+      revenue: 1450,
+      destination: 'Green Bay, WI',
+      priority: 'Medium',
+      commodityType: 'Automotive Parts'
+    },
+    {
+      id: 'P005',
+      location: 'South Bend, IN',
+      coordinates: { lat: 41.6764, lng: -86.2520 },
+      pickupWindow: '2025-07-12T09:00:00',
+      weight: 4100,
+      revenue: 720,
+      destination: 'Cincinnati, OH',
+      priority: 'Low',
+      commodityType: 'Paper Products'
+    }
+  ];
+
+  useEffect(() => {
+    setDeliveries(sampleDeliveries);
+    setAvailablePickups(samplePickups);
+    generateRecommendations();
+  }, []);
+
+  // Calculate distance between two coordinates (Haversine formula)
+  const calculateDistance = (coord1, coord2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
+    const dLon = (coord2.lng - coord1.lng) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Calculate profit score based on distance, revenue, and capacity utilization
+  const calculateProfitScore = (delivery, pickup) => {
+    const distance = calculateDistance(delivery.coordinates, pickup.coordinates);
+    const fuelCost = distance * 0.15; // $0.15 per km
+    const driverCost = distance * 0.08; // $0.08 per km
+    const totalCost = fuelCost + driverCost;
+    const profit = pickup.revenue - totalCost;
+    
+    // Bonus for capacity utilization
+    const capacityUtilization = pickup.weight / delivery.availableCapacity;
+    const utilizationBonus = capacityUtilization * 0.2;
+    
+    // Priority multiplier
+    const priorityMultiplier = pickup.priority === 'High' ? 1.3 : pickup.priority === 'Medium' ? 1.1 : 1.0;
+    
+    return (profit + utilizationBonus * pickup.revenue) * priorityMultiplier;
+  };
+
+  // Check if pickup is within 24 hours and capacity allows
+  const isPickupViable = (delivery, pickup) => {
+    const deliveryTime = new Date(delivery.deliveryTime);
+    const pickupTime = new Date(pickup.pickupWindow);
+    const timeDiff = (pickupTime - deliveryTime) / (1000 * 60 * 60); // hours
+    
+    return timeDiff > 0 && timeDiff <= 24 && pickup.weight <= delivery.availableCapacity;
+  };
+
+  // Generate recommendations for all deliveries
+  const generateRecommendations = () => {
+    const recs = sampleDeliveries.map(delivery => {
+      const viablePickups = samplePickups
+        .filter(pickup => isPickupViable(delivery, pickup))
+        .map(pickup => ({
+          ...pickup,
+          distance: calculateDistance(delivery.coordinates, pickup.coordinates),
+          profitScore: calculateProfitScore(delivery, pickup),
+          timeDiff: (new Date(pickup.pickupWindow) - new Date(delivery.deliveryTime)) / (1000 * 60 * 60)
+        }))
+        .sort((a, b) => b.profitScore - a.profitScore);
+
+      return {
+        deliveryId: delivery.id,
+        delivery: delivery,
+        recommendations: viablePickups.slice(0, 3) // Top 3 recommendations
+      };
+    });
+
+    setRecommendations(recs);
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  };
+
+  const formatTime = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'High': return 'text-red-600 bg-red-100';
+      case 'Medium': return 'text-yellow-600 bg-yellow-100';
+      case 'Low': return 'text-green-600 bg-green-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Backhaul Optimization System</h1>
+        <p className="text-gray-600">Optimize return trips by identifying profitable pickup opportunities within 24 hours of delivery</p>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center">
+            <Truck className="h-8 w-8 text-blue-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Active Deliveries</p>
+              <p className="text-2xl font-bold text-gray-900">{deliveries.length}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center">
+            <Package className="h-8 w-8 text-green-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Available Pickups</p>
+              <p className="text-2xl font-bold text-gray-900">{availablePickups.length}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center">
+            <Route className="h-8 w-8 text-purple-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Viable Matches</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {recommendations.reduce((acc, rec) => acc + rec.recommendations.length, 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="flex items-center">
+            <DollarSign className="h-8 w-8 text-yellow-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Potential Revenue</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatCurrency(recommendations.reduce((acc, rec) => 
+                  acc + (rec.recommendations[0]?.revenue || 0), 0))}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      <div className="space-y-6">
+        {recommendations.map((rec) => (
+          <div key={rec.deliveryId} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-blue-50 px-6 py-4 border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Truck className="h-5 w-5 text-blue-600 mr-2" />
+                  <span className="font-semibold text-gray-900">
+                    Delivery {rec.deliveryId} to {rec.delivery.destination}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  <Clock className="h-4 w-4 inline mr-1" />
+                  {formatTime(rec.delivery.deliveryTime)}
+                </div>
+              </div>
+              <div className="mt-2 grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Capacity:</span>
+                  <span className="ml-2 font-medium">{rec.delivery.availableCapacity.toLocaleString()} kg available</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Truck Type:</span>
+                  <span className="ml-2 font-medium">{rec.delivery.truckType}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Driver:</span>
+                  <span className="ml-2 font-medium">{rec.delivery.driverId}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {rec.recommendations.length > 0 ? (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Recommended Backhaul Opportunities
+                  </h3>
+                  {rec.recommendations.map((pickup, index) => (
+                    <div key={pickup.id} className={`border rounded-lg p-4 ${index === 0 ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                            <span className="font-medium text-gray-900">{pickup.location}</span>
+                            {index === 0 && (
+                              <span className="ml-2 px-2 py-1 text-xs bg-green-600 text-white rounded-full">
+                                Best Match
+                              </span>
+                            )}
+                            <span className={`ml-2 px-2 py-1 text-xs rounded-full ${getPriorityColor(pickup.priority)}`}>
+                              {pickup.priority} Priority
+                            </span>
+                          </div>
+                          
+                          <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-600">Weight:</span>
+                              <span className="ml-2 font-medium">{pickup.weight.toLocaleString()} kg</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Revenue:</span>
+                              <span className="ml-2 font-medium text-green-600">{formatCurrency(pickup.revenue)}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Distance:</span>
+                              <span className="ml-2 font-medium">{pickup.distance.toFixed(1)} km</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Pickup Time:</span>
+                              <span className="ml-2 font-medium">{formatTime(pickup.pickupWindow)}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-2 text-sm">
+                            <span className="text-gray-600">Destination:</span>
+                            <span className="ml-2 font-medium">{pickup.destination}</span>
+                            <span className="ml-4 text-gray-600">Commodity:</span>
+                            <span className="ml-2 font-medium">{pickup.commodityType}</span>
+                          </div>
+                          
+                          <div className="mt-2 text-sm">
+                            <span className="text-gray-600">Time after delivery:</span>
+                            <span className="ml-2 font-medium">{pickup.timeDiff.toFixed(1)} hours</span>
+                            <span className="ml-4 text-gray-600">Profit Score:</span>
+                            <span className="ml-2 font-medium text-blue-600">{pickup.profitScore.toFixed(1)}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            Assign Route
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <AlertCircle className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <p>No viable backhaul opportunities found within 24 hours</p>
+                  <p className="text-sm mt-2">Check capacity requirements and pickup windows</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Algorithm Information */}
+      <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Optimization Algorithm</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-medium text-gray-900 mb-2">Filtering Criteria</h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Pickup must be within 24 hours of delivery</li>
+              <li>• Load weight must not exceed available truck capacity</li>
+              <li>• Geographic proximity to delivery location</li>
+              <li>• Compatible commodity types and handling requirements</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-medium text-gray-900 mb-2">Profit Score Calculation</h4>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Base profit = Revenue - (Fuel cost + Driver cost)</li>
+              <li>• Capacity utilization bonus (up to 20% of revenue)</li>
+              <li>• Priority multiplier (High: 1.3x, Medium: 1.1x, Low: 1.0x)</li>
+              <li>• Distance optimization for fuel efficiency</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BackhaulOptimizer;

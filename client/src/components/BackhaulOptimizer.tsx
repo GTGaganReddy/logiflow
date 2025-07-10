@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { Truck, Package, MapPin, Euro, Clock, Route, AlertCircle, Check } from 'lucide-react';
+import { Truck, Package, MapPin, DollarSign, Clock, Route, AlertCircle, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -211,56 +211,56 @@ const BackhaulOptimizer = () => {
   const potentialRevenue = recommendations.reduce((acc, rec) => acc + (rec.recommendations[0]?.revenue || 0), 0);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center">
-          <Route className="h-5 w-5 mr-2" />
-          Backhaul Optimization
-        </CardTitle>
-        <p className="text-sm text-neutral-600">
-          Optimize return trips by identifying profitable pickup opportunities within 24 hours of delivery
-        </p>
-      </CardHeader>
+    <div className="bg-white rounded-lg shadow-md">
+      <div className="bg-gray-50 px-6 py-4 border-b">
+        <div className="flex items-center">
+          <Route className="h-6 w-6 text-blue-600 mr-3" />
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Backhaul Optimization System</h2>
+            <p className="text-sm text-gray-600">Optimize return trips by identifying profitable pickup opportunities within 24 hours of delivery</p>
+          </div>
+        </div>
+      </div>
       
-      <CardContent className="space-y-6">
+      <div className="p-6 space-y-6">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white p-6 rounded-lg shadow-md border">
             <div className="flex items-center">
-              <Truck className="h-6 w-6 text-blue-600 mr-2" />
+              <Truck className="h-8 w-8 text-blue-600 mr-3" />
               <div>
-                <p className="text-xs text-gray-600">Active Deliveries</p>
-                <p className="text-lg font-bold text-gray-900">{activeDeliveries}</p>
+                <p className="text-sm text-gray-600">Active Deliveries</p>
+                <p className="text-2xl font-bold text-gray-900">{activeDeliveries}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-green-50 p-4 rounded-lg">
+          <div className="bg-white p-6 rounded-lg shadow-md border">
             <div className="flex items-center">
-              <Package className="h-6 w-6 text-green-600 mr-2" />
+              <Package className="h-8 w-8 text-green-600 mr-3" />
               <div>
-                <p className="text-xs text-gray-600">Available Pickups</p>
-                <p className="text-lg font-bold text-gray-900">{availablePickups.length}</p>
+                <p className="text-sm text-gray-600">Available Pickups</p>
+                <p className="text-2xl font-bold text-gray-900">{availablePickups.length}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-white p-6 rounded-lg shadow-md border">
             <div className="flex items-center">
-              <Route className="h-6 w-6 text-purple-600 mr-2" />
+              <Route className="h-8 w-8 text-purple-600 mr-3" />
               <div>
-                <p className="text-xs text-gray-600">Viable Matches</p>
-                <p className="text-lg font-bold text-gray-900">{viableMatches}</p>
+                <p className="text-sm text-gray-600">Viable Matches</p>
+                <p className="text-2xl font-bold text-gray-900">{viableMatches}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-yellow-50 p-4 rounded-lg">
+          <div className="bg-white p-6 rounded-lg shadow-md border">
             <div className="flex items-center">
-              <Euro className="h-6 w-6 text-yellow-600 mr-2" />
+              <DollarSign className="h-8 w-8 text-yellow-600 mr-3" />
               <div>
-                <p className="text-xs text-gray-600">Potential Revenue</p>
-                <p className="text-lg font-bold text-gray-900">{formatCurrency(potentialRevenue)}</p>
+                <p className="text-sm text-gray-600">Potential Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(potentialRevenue)}</p>
               </div>
             </div>
           </div>
@@ -268,109 +268,128 @@ const BackhaulOptimizer = () => {
 
         {/* Recommendations */}
         {recommendations.length === 0 ? (
-          <div className="text-center py-8 text-neutral-500">
-            <Package className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
-            <p>No viable backhaul opportunities found for current deliveries.</p>
+          <div className="text-center py-12 text-gray-500">
+            <Package className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <p className="text-lg">No viable backhaul opportunities found for current deliveries.</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Recommended Backhaul Opportunities</h3>
-            
+          <div className="space-y-6">
             {recommendations.map((rec) => (
-              <div key={rec.deliveryId} className="border rounded-lg overflow-hidden">
-                <div className="bg-blue-50 px-4 py-3 border-b">
+              <div key={rec.deliveryId} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="bg-blue-50 px-6 py-4 border-b">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Truck className="h-4 w-4 text-blue-600 mr-2" />
-                      <span className="font-medium text-gray-900">
-                        {rec.delivery.customerName}
+                      <Truck className="h-5 w-5 text-blue-600 mr-2" />
+                      <span className="font-semibold text-gray-900">
+                        Delivery to {rec.delivery.customerName}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      <Clock className="h-3 w-3 inline mr-1" />
+                      <Clock className="h-4 w-4 inline mr-1" />
                       {rec.delivery.deliveryEndDate && rec.delivery.deliveryEndTime && 
                         formatTime(`${rec.delivery.deliveryEndDate}T${rec.delivery.deliveryEndTime}`)
                       }
                     </div>
                   </div>
+                  <div className="mt-2 grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Available Capacity:</span>
+                      <span className="ml-2 font-medium">8,000 kg</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Truck Type:</span>
+                      <span className="ml-2 font-medium">Full Truck Load</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Resource:</span>
+                      <span className="ml-2 font-medium">{rec.delivery.algoAssignedResource || rec.delivery.humanReservedResource || 'TBD'}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-4 space-y-3">
-                  {rec.recommendations.map((pickup: any, index: number) => (
-                    <div key={pickup.id} className={`border rounded-lg p-3 ${index === 0 ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center flex-wrap gap-2">
-                            <MapPin className="h-4 w-4 text-gray-500" />
-                            <span className="font-medium text-gray-900">{pickup.location}</span>
-                            {index === 0 && (
-                              <Badge className="bg-green-600 text-white text-xs">
-                                Best Match
-                              </Badge>
-                            )}
-                            <Badge variant="outline" className={`text-xs ${getPriorityColor(pickup.priority)}`}>
-                              {pickup.priority}
-                            </Badge>
-                          </div>
-                          
-                          <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                            <div>
-                              <span className="text-gray-600">Weight:</span>
-                              <span className="ml-1 font-medium">{pickup.weight.toLocaleString()} kg</span>
+                <div className="p-6">
+                  {rec.recommendations.length > 0 ? (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        Recommended Backhaul Opportunities
+                      </h3>
+                      {rec.recommendations.map((pickup: any, index: number) => (
+                        <div key={pickup.id} className={`border rounded-lg p-4 ${index === 0 ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center">
+                                <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                                <span className="font-medium text-gray-900">{pickup.location}</span>
+                                {index === 0 && (
+                                  <span className="ml-2 px-2 py-1 text-xs bg-green-600 text-white rounded-full">
+                                    Best Match
+                                  </span>
+                                )}
+                                <span className={`ml-2 px-2 py-1 text-xs rounded-full ${getPriorityColor(pickup.priority)}`}>
+                                  {pickup.priority} Priority
+                                </span>
+                              </div>
+                              
+                              <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Weight:</span>
+                                  <span className="ml-2 font-medium">{pickup.weight.toLocaleString()} kg</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Revenue:</span>
+                                  <span className="ml-2 font-medium text-green-600">{formatCurrency(pickup.revenue)}</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Distance:</span>
+                                  <span className="ml-2 font-medium">{Math.round(pickup.distance)} km</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Pickup:</span>
+                                  <span className="ml-2 font-medium">{formatTime(pickup.pickupWindow)}</span>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-2 text-sm">
+                                <span className="text-gray-600">Commodity:</span>
+                                <span className="ml-2 font-medium">{pickup.commodityType}</span>
+                                <span className="ml-4 text-gray-600">To:</span>
+                                <span className="ml-2 font-medium">{pickup.destination}</span>
+                              </div>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Revenue:</span>
-                              <span className="ml-1 font-medium text-green-600">{formatCurrency(pickup.revenue)}</span>
+                            
+                            <div className="ml-4">
+                              {isPickupAccepted(pickup.id) ? (
+                                <button
+                                  onClick={() => handleTogglePickup(pickup.id)}
+                                  className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center"
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Accepted
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleTogglePickup(pickup.id)}
+                                  className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center"
+                                >
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Accept
+                                </button>
+                              )}
                             </div>
-                            <div>
-                              <span className="text-gray-600">Distance:</span>
-                              <span className="ml-1 font-medium">{Math.round(pickup.distance)} km</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Pickup:</span>
-                              <span className="ml-1 font-medium">{formatTime(pickup.pickupWindow)}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-2 text-sm">
-                            <span className="text-gray-600">Commodity:</span>
-                            <span className="ml-1 font-medium">{pickup.commodityType}</span>
-                            <span className="ml-3 text-gray-600">To:</span>
-                            <span className="ml-1 font-medium">{pickup.destination}</span>
                           </div>
                         </div>
-                        
-                        <div className="ml-4">
-                          {isPickupAccepted(pickup.id) ? (
-                            <Button
-                              size="sm"
-                              onClick={() => handleTogglePickup(pickup.id)}
-                              className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs"
-                            >
-                              <Check className="h-3 w-3 mr-1" />
-                              Accepted
-                            </Button>
-                          ) : (
-                            <Button
-                              size="sm"
-                              onClick={() => handleTogglePickup(pickup.id)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
-                            >
-                              <Check className="h-3 w-3 mr-1" />
-                              Accept
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">No viable pickup opportunities found.</p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
