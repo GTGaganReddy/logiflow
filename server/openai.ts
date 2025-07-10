@@ -55,6 +55,25 @@ export async function sendMessage({ threadId, message, assistantId }: SendMessag
       throw new Error('Message is required');
     }
 
+    // Check if there are any active runs for this thread
+    const runs = await openai.beta.threads.runs.list(threadId);
+    const activeRun = runs.data.find(run => run.status === 'in_progress' || run.status === 'queued');
+    
+    if (activeRun) {
+      console.log('Found active run, waiting for completion:', activeRun.id);
+      // Wait for the active run to complete
+      let runStatus = await openai.beta.threads.runs.retrieve(threadId, activeRun.id);
+      let attempts = 0;
+      const maxAttempts = 20;
+      
+      while ((runStatus.status === 'queued' || runStatus.status === 'in_progress') && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        runStatus = await openai.beta.threads.runs.retrieve(threadId, activeRun.id);
+        attempts++;
+        console.log(`Waiting for active run completion: ${runStatus.status}, attempt ${attempts}`);
+      }
+    }
+
     // Add message to thread
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
