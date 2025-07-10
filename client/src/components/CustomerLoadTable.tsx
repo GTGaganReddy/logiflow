@@ -64,26 +64,19 @@ export default function CustomerLoadTable() {
     },
   });
 
-  const acceptResourceMutation = useMutation({
+  const acceptAISuggestionMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
-      // Only proceed if human resource is assigned
-      if (!load.humanReservedResource || !load.algoAssignedResource) {
-        throw new Error("Cannot accept - both AI and human resources must be assigned");
+      // Only proceed if AI suggestion is available
+      if (!load.aiSuggestionResource) {
+        throw new Error("No AI suggestion available");
       }
       
-      // Store original algo assignment in remark for revert capability
-      const originalRemark = load.remark || '';
-      const remarkWithOriginal = originalRemark ? 
-        `${originalRemark} [Original algo: ${load.algoAssignedResource}]` : 
-        `[Original algo: ${load.algoAssignedResource}]`;
-      
-      // Update the customer load to remove algo assigned resource but keep human
+      // Accept AI suggestion: assign the suggested resource as algo assigned
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        algoAssignedResource: null,
-        remark: remarkWithOriginal,
+        algoAssignedResource: load.aiSuggestionResource,
+        aiSuggestionAccepted: true,
         aiAcceptanceCount: (load.aiAcceptanceCount || 0) + 1,
         incentivePoints: (load.incentivePoints || 0) + 2,
-        // Keep human reserved resource as is
       });
     },
     onSuccess: () => {
@@ -91,38 +84,31 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Assignment accepted! +2 incentive points earned",
+        description: "AI suggestion accepted! +2 incentive points earned",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Error", 
-        description: error.message || "Failed to accept assignment",
+        description: error.message || "Failed to accept AI suggestion",
         variant: "destructive",
       });
     },
   });
 
-  const revertResourceMutation = useMutation({
+  const revertAISuggestionMutation = useMutation({
     mutationFn: async (load: CustomerLoad) => {
-      // Extract original algo assignment from remark
-      const remarkMatch = load.remark?.match(/\[Original algo: ([^\]]+)\]/);
-      if (!remarkMatch) {
-        throw new Error("Cannot revert - original algorithm assignment not found");
+      // Only proceed if AI suggestion was accepted
+      if (!load.aiSuggestionAccepted) {
+        throw new Error("No AI suggestion to revert");
       }
       
-      const originalAlgo = remarkMatch[1];
-      
-      // Clean the remark by removing the original algo notation
-      const cleanedRemark = load.remark?.replace(/\s*\[Original algo: [^\]]+\]/, '') || '';
-      
-      // Restore the algorithm assignment and keep human assignment
+      // Revert AI suggestion: remove algo assignment and reset AI suggestion state
       await apiRequest("PUT", `/api/customer-loads/${load.id}`, {
-        algoAssignedResource: originalAlgo,
-        remark: cleanedRemark,
+        algoAssignedResource: null,
+        aiSuggestionAccepted: false,
         aiAcceptanceCount: Math.max((load.aiAcceptanceCount || 0) - 1, 0),
         incentivePoints: Math.max((load.incentivePoints || 0) - 2, 0),
-        // Keep human reserved resource as is
       });
     },
     onSuccess: () => {
@@ -130,13 +116,13 @@ export default function CustomerLoadTable() {
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       toast({
         title: "Success",
-        description: "Assignment reverted - Incentive points deducted",
+        description: "AI suggestion reverted - Incentive points deducted",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Error", 
-        description: error.message || "Failed to revert assignment",
+        description: error.message || "Failed to revert AI suggestion",
         variant: "destructive",
       });
     },
@@ -370,11 +356,11 @@ export default function CustomerLoadTable() {
                 ) : (
                   filteredLoads.map((load) => {
                     // Check if this load has AI suggestions (pending or accepted)
-                    const hasPendingAISuggestions = Boolean(load.remarkPriority || (load.humanReservedResource && load.algoAssignedResource));
+                    const hasPendingAISuggestions = Boolean(load.remarkPriority || (load.aiSuggestionResource && !load.aiSuggestionAccepted));
                     const hasAcceptedAISuggestions = Boolean(
+                      load.aiSuggestionAccepted || 
                       (load.aiAcceptanceCount && load.aiAcceptanceCount > 0) || 
-                      (load.remark && (load.remark.includes('[Original priority:') || load.remark.includes('[Original algo:'))) ||
-                      (load.humanReservedResource && !load.algoAssignedResource && load.remark && load.remark.includes('[Original algo:'))
+                      (load.remark && (load.remark.includes('[Original priority:') || load.remark.includes('[Original algo:')))
                     );
                     const hasAnyAISuggestions = hasPendingAISuggestions || hasAcceptedAISuggestions;
                     
@@ -405,13 +391,25 @@ export default function CustomerLoadTable() {
                             <div className="flex items-center space-x-1">
                               <p className="text-sm font-medium text-neutral-900 truncate">{load.customerName}</p>
                               {hasAnyAISuggestions && (
-                                <Badge variant="outline" className={`text-xs px-1.5 py-0.5 whitespace-nowrap ${
-                                  hasPendingAISuggestions 
-                                    ? 'text-blue-600 border-blue-600 bg-blue-50' 
-                                    : 'text-green-600 border-green-600 bg-green-50'
-                                }`}>
-                                  {hasPendingAISuggestions ? 'AI' : 'AI ✓'}
-                                </Badge>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs px-1.5 py-0.5 whitespace-nowrap cursor-pointer hover:opacity-80 ${
+                                        hasPendingAISuggestions 
+                                          ? 'text-blue-600 border-blue-600 bg-blue-50' 
+                                          : 'text-green-600 border-green-600 bg-green-50'
+                                      }`}
+                                      onClick={() => setAiChatbot({ isOpen: true, customerLoad: load })}
+                                    >
+                                      {hasPendingAISuggestions ? 'AI' : 'AI ✓'}
+                                      <MessageCircle className="h-3 w-3 ml-1 inline" />
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to chat about AI suggestion</p>
+                                  </TooltipContent>
+                                </Tooltip>
                               )}
                             </div>
                             <div className="text-xs text-neutral-500 truncate">{load.location || "No location"}</div>
@@ -420,21 +418,8 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="text-xs">
-                          {load.aiSuggestionResource ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge 
-                                  className="bg-blue-500 text-white text-xs px-2 py-1 cursor-pointer hover:bg-blue-600"
-                                  onClick={() => setAiChatbot({ isOpen: true, customerLoad: load })}
-                                >
-                                  {load.aiSuggestionResource}
-                                  <MessageCircle className="h-3 w-3 ml-1 inline" />
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>AI suggested resource - Click to chat about this assignment</p>
-                              </TooltipContent>
-                            </Tooltip>
+                          {load.aiSuggestionAccepted && load.algoAssignedResource ? (
+                            <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
                           ) : load.algoAssignedResource ? (
                             <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
                           ) : (
@@ -484,40 +469,40 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="flex items-center space-x-1">
-                          {/* Resource Assignment Accept/Revert buttons */}
-                          {load.humanReservedResource && load.algoAssignedResource && (
+                          {/* AI Suggestion Accept/Revert buttons */}
+                          {load.aiSuggestionResource && !load.aiSuggestionAccepted && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="p-1 h-6 w-6 text-success hover:bg-success hover:text-white"
-                                  onClick={() => acceptResourceMutation.mutate(load)}
-                                  disabled={acceptResourceMutation.isPending}
+                                  className="p-1 h-6 w-6 text-blue-600 hover:bg-blue-100"
+                                  onClick={() => acceptAISuggestionMutation.mutate(load)}
+                                  disabled={acceptAISuggestionMutation.isPending}
                                 >
                                   <Check className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Accept human resource assignment</p>
+                                <p>Accept AI suggestion</p>
                               </TooltipContent>
                             </Tooltip>
                           )}
-                          {load.humanReservedResource && !load.algoAssignedResource && load.remark?.includes('[Original algo:') && (
+                          {load.aiSuggestionAccepted && (
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="p-1 h-6 w-6 text-orange-600 hover:bg-orange-100"
-                                  onClick={() => revertResourceMutation.mutate(load)}
-                                  disabled={revertResourceMutation.isPending}
+                                  onClick={() => revertAISuggestionMutation.mutate(load)}
+                                  disabled={revertAISuggestionMutation.isPending}
                                 >
                                   <Undo2 className="h-3 w-3" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Revert resource assignment</p>
+                                <p>Revert AI suggestion</p>
                               </TooltipContent>
                             </Tooltip>
                           )}
