@@ -62,13 +62,19 @@ export async function sendMessage({ threadId, message, assistantId }: SendMessag
     if (activeRun) {
       console.log('Found active run, waiting for completion:', activeRun.id);
       // Wait for the active run to complete
-      let runStatus = await openai.beta.threads.runs.retrieve(threadId, activeRun.id);
+      let runStatus = await openai.beta.threads.runs.retrieve({
+        thread_id: threadId,
+        run_id: activeRun.id
+      });
       let attempts = 0;
       const maxAttempts = 20;
       
       while ((runStatus.status === 'queued' || runStatus.status === 'in_progress') && attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        runStatus = await openai.beta.threads.runs.retrieve(threadId, activeRun.id);
+        runStatus = await openai.beta.threads.runs.retrieve({
+          thread_id: threadId,
+          run_id: activeRun.id
+        });
         attempts++;
         console.log(`Waiting for active run completion: ${runStatus.status}, attempt ${attempts}`);
       }
@@ -98,14 +104,20 @@ Keep explanations clear and practical for logistics coordinators.`
 
     // Wait for completion with timeout
     console.log('Before retrieve - threadId:', threadId, 'run.id:', run.id);
-    let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    let runStatus = await openai.beta.threads.runs.retrieve({
+      thread_id: threadId,
+      run_id: run.id
+    });
     let attempts = 0;
     const maxAttempts = 30; // 30 seconds timeout
     
     while ((runStatus.status === 'queued' || runStatus.status === 'in_progress') && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Before loop retrieve - threadId:', threadId, 'run.id:', run.id);
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      runStatus = await openai.beta.threads.runs.retrieve({
+        thread_id: threadId,
+        run_id: run.id
+      });
       attempts++;
       console.log(`Run status: ${runStatus.status}, attempt ${attempts}`);
     }
