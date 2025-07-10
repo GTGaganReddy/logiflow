@@ -7,17 +7,17 @@
       "priority": "low",
       "deliveryStartDate": "2025-07-11",
       "deliveryEndDate": "2025-07-12",
-      "deliveryStartTime": "11:36:00",
+      "deliveryStartTime": "2025-07-11T11:36:00Z",
       "deliveryEndTime": "08:00:00",
       "id": 40,
       "location": null,
       "humanReservedResource": null,
-      "remark": "Feedback suggest Higher Priority [Original priority: low]",
+      "remark": "Feedback suggest Higher Priority",
       "createdAt": "2025-07-09T00:51:00.704Z",
       "deliveryStatus": "assigned",
-      "remarkPriority": null,
-      "aiAcceptanceCount": 1,
-      "incentivePoints": 2
+      "remarkPriority": "high",
+      "aiAcceptanceCount": 0,
+      "incentivePoints": 0
     },
     {
       "slNo": "2",
@@ -1622,20 +1622,6 @@
       "id": 124
     },
     {
-      "customerLoadId": 40,
-      "sequenceNumber": 1,
-      "startingPoint": "Berlin",
-      "endingPoint": "Munich",
-      "startDate": "2025-07-11",
-      "startTime": "11:24:00",
-      "endDate": "2025-07-12",
-      "endTime": "08:00:00",
-      "breakTime": "2700",
-      "status": "pending",
-      "notes": null,
-      "id": 138
-    },
-    {
       "customerLoadId": 41,
       "sequenceNumber": 1,
       "startingPoint": "Vienna",
@@ -1662,6 +1648,34 @@
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
       "id": 140
+    },
+    {
+      "customerLoadId": 40,
+      "sequenceNumber": 1,
+      "startingPoint": "Berlin",
+      "endingPoint": "",
+      "startDate": "2025-07-11T11:24:00Z",
+      "startTime": "",
+      "endDate": "2025-07-11T15:00:00Z",
+      "endTime": "",
+      "breakTime": null,
+      "status": "pending",
+      "notes": null,
+      "id": 141
+    },
+    {
+      "customerLoadId": 40,
+      "sequenceNumber": 2,
+      "startingPoint": "Munich",
+      "endingPoint": "",
+      "startDate": "2025-07-11T22:57:00Z",
+      "startTime": "",
+      "endDate": "2025-07-12T08:00:00Z",
+      "endTime": "",
+      "breakTime": "2700",
+      "status": "pending",
+      "notes": "SHORT break",
+      "id": 142
     }
   ]
 }
