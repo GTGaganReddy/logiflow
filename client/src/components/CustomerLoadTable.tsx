@@ -142,6 +142,11 @@ export default function CustomerLoadTable() {
           updates.remark = load.remark?.replace(/\s*\[Original algo: [^\]]+\]/, '') || '';
         }
         updates.aiSuggestionAccepted = false;
+        // Restore the AI suggestion so user can accept it again
+        if (load.remark?.includes('swap recommended')) {
+          // Generate a new AI suggestion based on the pattern
+          updates.aiSuggestionResource = `AI-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        }
       }
       
       // Revert AI priority suggestion if accepted
@@ -394,7 +399,8 @@ export default function CustomerLoadTable() {
                           {/* Algorithm resource logic:
                               - Show current algoAssignedResource if no AI suggestions accepted for resources
                               - Show AI suggestion resource if pending
-                              - Hide algorithm resource if AI suggestions were accepted (disappears)
+                              - Show human resource in algorithm column if AI suggestions were accepted (resource swap)
+                              - Hide algorithm resource if AI suggestions were accepted and no human resource
                           */}
                           {load.algoAssignedResource && !load.aiSuggestionAccepted ? (
                             <Badge className="bg-success text-white text-xs px-2 py-1">{load.algoAssignedResource}</Badge>
@@ -402,6 +408,8 @@ export default function CustomerLoadTable() {
                             <Badge className="bg-blue-500 text-white text-xs px-2 py-1">
                               AI: {load.aiSuggestionResource}
                             </Badge>
+                          ) : load.aiSuggestionAccepted && load.humanReservedResource ? (
+                            <Badge className="bg-primary text-white text-xs px-2 py-1">{load.humanReservedResource}</Badge>
                           ) : (
                             <Badge variant="secondary" className="text-xs px-2 py-1">-</Badge>
                           )}
@@ -409,7 +417,12 @@ export default function CustomerLoadTable() {
                       </TableCell>
                       <TableCell className="p-2">
                         <div className="text-xs">
-                          {load.humanReservedResource ? (
+                          {/* Human Resource logic:
+                              - Show blurred if AI suggestions are pending
+                              - Hide if AI suggestions were accepted (moves to algorithm column)
+                              - Show normally if no AI suggestions or not accepted
+                          */}
+                          {load.humanReservedResource && !load.aiSuggestionAccepted ? (
                             <Badge 
                               className={`bg-primary text-white text-xs px-2 py-1 ${
                                 hasPendingAISuggestions ? 'opacity-50 blur-[1px]' : ''

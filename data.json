@@ -40,7 +40,7 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "T-998KL",
+      "aiSuggestionResource": null,
       "aiSuggestionAccepted": false
     },
     {
@@ -61,7 +61,8 @@
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "F-445RT"
+      "aiSuggestionResource": null,
+      "aiSuggestionAccepted": false
     },
     {
       "slNo": "EXT-1752044301394",
