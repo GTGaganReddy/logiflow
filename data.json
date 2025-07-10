@@ -7,17 +7,17 @@
       "priority": "low",
       "deliveryStartDate": "2025-07-11",
       "deliveryEndDate": "2025-07-12",
-      "deliveryStartTime": "2025-07-11T11:36:00Z",
+      "deliveryStartTime": "11:36:00",
       "deliveryEndTime": "08:00:00",
       "id": 40,
       "location": null,
       "humanReservedResource": null,
-      "remark": "Feedback suggest Higher Priority",
+      "remark": "Feedback suggest Higher Priority [Original priority: low]",
       "createdAt": "2025-07-09T00:51:00.704Z",
       "deliveryStatus": "assigned",
-      "remarkPriority": "high",
-      "aiAcceptanceCount": 0,
-      "incentivePoints": 0
+      "remarkPriority": null,
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2
     },
     {
       "slNo": "2",
@@ -26,34 +26,34 @@
       "priority": "high",
       "deliveryStartDate": "2025-07-12",
       "deliveryEndDate": "2025-07-12",
-      "deliveryStartTime": "06:15",
+      "deliveryStartTime": "06:15:00",
       "deliveryEndTime": "14:00:00",
       "id": 41,
       "location": null,
-      "humanReservedResource": null,
-      "remark": null,
+      "humanReservedResource": "Z-1645NH",
+      "remark": "Notepad assignment found, swap recommended.",
       "createdAt": "2025-07-09T00:51:06.814Z",
       "deliveryStatus": "assigned",
-      "aiAcceptanceCount": 0,
-      "incentivePoints": 0
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2
     },
     {
       "slNo": "3",
       "customerName": "Salzburger Logistik Service",
       "algoAssignedResource": "S-678PQ",
-      "humanReservedResource": "Z-1645NH",
+      "humanReservedResource": "N-2548GT",
       "priority": "medium",
       "remark": "Notepad assignment found, swap recommended.",
       "deliveryStartDate": "2025-07-13",
       "deliveryEndDate": "2025-07-13",
-      "deliveryStartTime": "2025-07-13T08:00:00Z",
+      "deliveryStartTime": "08:00:00",
       "deliveryEndTime": "16:00:00",
       "id": 42,
       "location": null,
       "createdAt": "2025-07-09T00:51:13.638Z",
       "deliveryStatus": "assigned",
-      "aiAcceptanceCount": 0,
-      "incentivePoints": 0
+      "aiAcceptanceCount": 1,
+      "incentivePoints": 2
     },
     {
       "slNo": "EXT-1752044301394",
@@ -201,8 +201,8 @@
   "notepad": [
     {
       "id": 1,
-      "content": "Notepad content: \nCustomer Name: Salzburger Logistik Service\nAs the coordinator reviewed the planning details, it became clear that Resource: Z-1645NH was the perfect match. Known for its precision and reliability, this resource would undoubtedly deliver the excellence required for the order’s success.\n\n\n",
-      "updatedAt": "2025-07-09T07:12:33.326Z"
+      "content": "Notepad content: \nCustomer Name: Wiener Stahlwerk GmbH\nAs the coordinator reviewed the planning details, it became clear that Resource: Z-1645NH was the perfect match. Known for its precision and reliability, this resource would undoubtedly deliver the excellence required for the order’s success.\n\nCustomer Name: Salzburger Logistik Service\nResource: N-2548GT was set aside for this order. Its selection was driven by its robust capability to handle challenging demands, ensuring the planning order would be executed flawlessly.\n\n\n",
+      "updatedAt": "2025-07-10T05:37:48.413Z"
     }
   ],
   "users": [],
@@ -1622,88 +1622,46 @@
       "id": 124
     },
     {
+      "customerLoadId": 40,
+      "sequenceNumber": 1,
+      "startingPoint": "Berlin",
+      "endingPoint": "Munich",
+      "startDate": "2025-07-11",
+      "startTime": "11:24:00",
+      "endDate": "2025-07-12",
+      "endTime": "08:00:00",
+      "breakTime": "2700",
+      "status": "pending",
+      "notes": null,
+      "id": 138
+    },
+    {
       "customerLoadId": 41,
       "sequenceNumber": 1,
       "startingPoint": "Vienna",
       "endingPoint": "Linz",
       "startDate": "2025-07-12",
-      "startTime": "06:00",
+      "startTime": "06:00:00",
       "endDate": "2025-07-12",
-      "endTime": "09:30",
-      "breakTime": null,
-      "status": "pending",
-      "notes": "Weekend delivery - additional surcharge applies",
-      "id": 127
-    },
-    {
-      "customerLoadId": 41,
-      "sequenceNumber": 2,
-      "startingPoint": "Linz",
-      "endingPoint": "",
-      "startDate": "2025-07-12",
-      "startTime": "12:45",
-      "endDate": "2025-07-12",
-      "endTime": "14:00",
+      "endTime": "14:00:00",
       "breakTime": "3600",
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
-      "id": 128
-    },
-    {
-      "customerLoadId": 40,
-      "sequenceNumber": 1,
-      "startingPoint": "Berlin",
-      "endingPoint": "",
-      "startDate": "2025-07-11T11:24:00Z",
-      "startTime": "",
-      "endDate": "2025-07-11T15:00:00Z",
-      "endTime": "",
-      "breakTime": null,
-      "status": "pending",
-      "notes": null,
-      "id": 133
-    },
-    {
-      "customerLoadId": 40,
-      "sequenceNumber": 2,
-      "startingPoint": "Munich",
-      "endingPoint": "",
-      "startDate": "2025-07-11T22:57:00Z",
-      "startTime": "",
-      "endDate": "2025-07-12T08:00:00Z",
-      "endTime": "",
-      "breakTime": "2700",
-      "status": "pending",
-      "notes": "SHORT break",
-      "id": 134
+      "id": 139
     },
     {
       "customerLoadId": 42,
       "sequenceNumber": 1,
       "startingPoint": "Salzburg",
-      "endingPoint": "",
-      "startDate": "2025-07-13T07:45:00Z",
-      "startTime": "",
-      "endDate": "2025-07-13T11:20:00Z",
-      "endTime": "",
-      "breakTime": null,
-      "status": "pending",
-      "notes": "Weekend delivery - additional surcharge applies",
-      "id": 135
-    },
-    {
-      "customerLoadId": 42,
-      "sequenceNumber": 2,
-      "startingPoint": "Innsbruck",
-      "endingPoint": "",
-      "startDate": "2025-07-13T14:30:00Z",
-      "startTime": "",
-      "endDate": "2025-07-13T16:00:00Z",
-      "endTime": "",
+      "endingPoint": "Innsbruck",
+      "startDate": "2025-07-13",
+      "startTime": "07:45:00",
+      "endDate": "2025-07-13",
+      "endTime": "16:00:00",
       "breakTime": "1800",
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
-      "id": 136
+      "id": 140
     }
   ]
 }

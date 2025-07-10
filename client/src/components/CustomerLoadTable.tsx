@@ -347,7 +347,7 @@ export default function CustomerLoadTable() {
                   <TableHead className="w-8 p-2"></TableHead>
                   <TableHead className="w-16 p-2">Sl. No</TableHead>
                   <TableHead className="min-w-[160px] p-2">Customer</TableHead>
-                  <TableHead className="w-24 p-2">AI Res.</TableHead>
+                  <TableHead className="w-24 p-2">Algorithm</TableHead>
                   <TableHead className="w-24 p-2">Human Res.</TableHead>
                   <TableHead className="w-28 p-2">Priority</TableHead>
                   <TableHead className="w-20 p-2">Status</TableHead>
