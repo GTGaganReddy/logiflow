@@ -4,6 +4,7 @@ import { useState } from "react";
 import CustomerLoadTable from "@/components/CustomerLoadTable";
 import FleetStatus from "@/components/FleetStatus";
 import LogisticsNotepad from "@/components/LogisticsNotepad";
+import BackhaulOptimizer from "@/components/BackhaulOptimizer";
 import AddCustomerModal from "@/components/AddCustomerModal";
 import DashboardStats from "@/components/DashboardStats";
 
@@ -47,6 +48,7 @@ export default function Dashboard() {
           <DashboardStats />
           <CustomerLoadTable />
           <LogisticsNotepad />
+          <BackhaulOptimizer />
         </div>
       </div>
 
