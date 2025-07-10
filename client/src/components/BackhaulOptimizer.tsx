@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { Truck, Package, MapPin, DollarSign, Clock, Route, AlertCircle } from 'lucide-react';
+import { Truck, Package, MapPin, Euro, Clock, Route, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { CustomerLoad } from "@shared/schema";
@@ -239,7 +239,7 @@ const BackhaulOptimizer = () => {
           
           <div className="bg-yellow-50 p-4 rounded-lg">
             <div className="flex items-center">
-              <DollarSign className="h-6 w-6 text-yellow-600 mr-2" />
+              <Euro className="h-6 w-6 text-yellow-600 mr-2" />
               <div>
                 <p className="text-xs text-gray-600">Potential Revenue</p>
                 <p className="text-lg font-bold text-gray-900">{formatCurrency(potentialRevenue)}</p>
