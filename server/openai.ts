@@ -43,6 +43,18 @@ Please help me understand why this particular resource was recommended and what 
 
 export async function sendMessage({ threadId, message, assistantId }: SendMessageParams) {
   try {
+    console.log('SendMessage params:', { threadId, message: message?.substring(0, 50), assistantId });
+    
+    if (!threadId) {
+      throw new Error('Thread ID is required');
+    }
+    if (!assistantId) {
+      throw new Error('Assistant ID is required');
+    }
+    if (!message) {
+      throw new Error('Message is required');
+    }
+
     // Add message to thread
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
@@ -63,12 +75,18 @@ Be helpful and explain in simple terms:
 Keep explanations clear and practical for logistics coordinators.`
     });
 
-    // Wait for completion
+    console.log('Created run:', run.id, 'for thread:', threadId);
+
+    // Wait for completion with timeout
     let runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+    let attempts = 0;
+    const maxAttempts = 30; // 30 seconds timeout
     
-    while (runStatus.status === 'queued' || runStatus.status === 'in_progress') {
+    while ((runStatus.status === 'queued' || runStatus.status === 'in_progress') && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 1000));
       runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
+      attempts++;
+      console.log(`Run status: ${runStatus.status}, attempt ${attempts}`);
     }
 
     if (runStatus.status === 'completed') {
@@ -81,7 +99,8 @@ Keep explanations clear and practical for logistics coordinators.`
       }
     }
 
-    throw new Error('Assistant run did not complete successfully');
+    console.error('Run failed or timed out:', runStatus);
+    throw new Error(`Assistant run failed with status: ${runStatus.status}`);
   } catch (error) {
     console.error('Error sending message:', error);
     throw new Error('Failed to send message to AI assistant');

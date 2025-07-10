@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,12 @@ export default function AIChatbot({ isOpen, onClose, customerLoad, assistantId }
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [threadId, setThreadId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   // Initialize conversation with context about the customer load
   useEffect(() => {
@@ -49,10 +55,11 @@ What would you like to know about this assignment?`,
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    const currentMessage = inputMessage; // Store the current message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputMessage,
+      content: currentMessage,
       timestamp: new Date()
     };
 
@@ -61,8 +68,10 @@ What would you like to know about this assignment?`,
     setIsLoading(true);
 
     try {
+      let currentThreadId = threadId;
+      
       // If no thread exists, create one
-      if (!threadId) {
+      if (!currentThreadId) {
         const threadResponse = await fetch('/api/ai/create-thread', {
           method: 'POST',
           headers: {
@@ -70,14 +79,15 @@ What would you like to know about this assignment?`,
           },
           body: JSON.stringify({
             customerLoad,
-            assistantId: assistantId || 'asst_default'
+            assistantId: assistantId || 'asst_yO0IRQryDTgoN7vongxPLtst'
           })
         });
 
         if (!threadResponse.ok) throw new Error('Failed to create thread');
         
         const threadData = await threadResponse.json();
-        setThreadId(threadData.threadId);
+        currentThreadId = threadData.threadId;
+        setThreadId(currentThreadId);
       }
 
       // Send message to assistant
@@ -87,9 +97,9 @@ What would you like to know about this assignment?`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          threadId: threadId,
-          message: inputMessage,
-          assistantId: assistantId || 'asst_default'
+          threadId: currentThreadId,
+          message: currentMessage,
+          assistantId: assistantId || 'asst_yO0IRQryDTgoN7vongxPLtst'
         })
       });
 
@@ -189,6 +199,7 @@ What would you like to know about this assignment?`,
                   </div>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
           
