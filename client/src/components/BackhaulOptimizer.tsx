@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { Truck, Package, MapPin, Euro, Clock, Route, AlertCircle } from 'lucide-react';
+import { Truck, Package, MapPin, Euro, Clock, Route, AlertCircle, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { CustomerLoad } from "@shared/schema";
 
 const BackhaulOptimizer = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [acceptedPickups, setAcceptedPickups] = useState<Set<string>>(new Set());
 
   // Get current customer loads to use as delivery data
   const { data: loads = [] } = useQuery<CustomerLoad[]>({
@@ -188,6 +190,14 @@ const BackhaulOptimizer = () => {
     }
   };
 
+  const handleAcceptPickup = (pickupId: string) => {
+    setAcceptedPickups(prev => new Set([...prev, pickupId]));
+  };
+
+  const isPickupAccepted = (pickupId: string) => {
+    return acceptedPickups.has(pickupId);
+  };
+
   const activeDeliveries = loads.filter(load => load.deliveryStatus === 'assigned').length;
   const viableMatches = recommendations.reduce((acc, rec) => acc + rec.recommendations.length, 0);
   const potentialRevenue = recommendations.reduce((acc, rec) => acc + (rec.recommendations[0]?.revenue || 0), 0);
@@ -320,6 +330,24 @@ const BackhaulOptimizer = () => {
                             <span className="ml-3 text-gray-600">To:</span>
                             <span className="ml-1 font-medium">{pickup.destination}</span>
                           </div>
+                        </div>
+                        
+                        <div className="ml-4">
+                          {isPickupAccepted(pickup.id) ? (
+                            <Badge className="bg-green-600 text-white">
+                              <Check className="h-3 w-3 mr-1" />
+                              Accepted
+                            </Badge>
+                          ) : (
+                            <Button
+                              size="sm"
+                              onClick={() => handleAcceptPickup(pickup.id)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs"
+                            >
+                              <Check className="h-3 w-3 mr-1" />
+                              Accept
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
