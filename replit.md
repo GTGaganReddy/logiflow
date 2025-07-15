@@ -97,6 +97,16 @@ The system uses Drizzle ORM with PostgreSQL schema definitions but currently ope
 
 ## Recent Changes
 
+### July 15, 2025 - Complete Documentation & AI Tooltip Enhancements
+- **Comprehensive README**: Added complete README.md with architecture documentation, deployment options, and hosting instructions
+- **AI Tooltip Improvements**: Enhanced hover tooltips with context-specific messages
+  - Priority suggestions: "based on coordinator feedback from 2 weeks ago"
+  - Resource swap suggestions: "From Dynamic feedback Notepad where you made a request for [license number] - it's available"
+  - Dynamic license number display using actual humanReservedResource values
+- **Fixed Chatbot Scrolling**: Replaced ScrollArea with native CSS scrolling for better compatibility
+- **Deployment Documentation**: Added instructions for Replit, Vercel, Netlify, Docker, and traditional VPS hosting
+- **API Documentation**: Complete endpoint documentation with examples and response formats
+
 ### July 9, 2025 - AI-Suggested Priority Changes & Accept/Revert Functionality
 - **Priority Suggestions**: Added `remarkPriority` field to schema for AI-suggested priority changes
 - **Accept/Revert Buttons**: Implemented accept buttons that change to revert buttons after acceptance
