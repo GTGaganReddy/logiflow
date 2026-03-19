@@ -3,7 +3,7 @@
     {
       "slNo": "1",
       "customerName": "Blautal Maschinenbau AG",
-      "algoAssignedResource": null,
+      "algoAssignedResource": "W-792XY",
       "priority": "low",
       "deliveryStartDate": "2025-07-11",
       "deliveryEndDate": "2025-07-12",
@@ -33,14 +33,14 @@
       "deliveryEndTime": "14:00:00",
       "id": 41,
       "location": null,
-      "humanReservedResource": "Z-1645NH",
+      "humanReservedResource": "A-1645NH",
       "remark": "Notepad assignment found, swap recommended.",
       "createdAt": "2025-07-09T00:51:06.814Z",
       "deliveryStatus": "assigned",
       "aiAcceptanceCount": 1,
       "incentivePoints": 2,
       "aiAssistantId": "asst_yO0IRQryDTgoN7vongxPLtst",
-      "aiSuggestionResource": "AI-PUQD9A",
+      "aiSuggestionResource": "AI-5JWFX8",
       "aiSuggestionAccepted": false
     },
     {
@@ -211,8 +211,8 @@
   "notepad": [
     {
       "id": 1,
-      "content": "Notepad content: \nCustomer Name: Wiener Stahlwerk GmbH\nAs the coordinator reviewed the planning details, it became clear that Resource: Z-1645NH was the perfect match. Known for its precision and reliability, this resource would undoubtedly deliver the excellence required for the order’s success.\n\nCustomer Name: Salzburger Logistik Service\nResource: N-2548GT was set aside for this order. Its selection was driven by its robust capability to handle challenging demands, ensuring the planning order would be executed flawlessly.\n\n\n",
-      "updatedAt": "2025-07-10T05:37:48.413Z"
+      "content": "Notepad content: \nCustomer Name: Wiener Stahlwerk GmbH\nAs the coordinator reviewed the planning details, it became clear that Resource: A-1645NH was the perfect match. Known for its precision and reliability, this resource would undoubtedly deliver the excellence required for the order’s success.\n\nCustomer Name: Salzburger Logistik Service\nResource: N-2548GT was set aside for this order. Its selection was driven by its robust capability to handle challenging demands, ensuring the planning order would be executed flawlessly.\n\n\n",
+      "updatedAt": "2025-08-22T08:02:09.368Z"
     }
   ],
   "users": [],
@@ -1640,10 +1640,10 @@
       "startTime": "06:00:00",
       "endDate": "2025-07-12",
       "endTime": "14:00:00",
-      "breakTime": "3600",
+      "breakTime": "60",
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
-      "id": 139
+      "id": 143
     },
     {
       "customerLoadId": 42,
@@ -1654,10 +1654,10 @@
       "startTime": "07:45:00",
       "endDate": "2025-07-13",
       "endTime": "16:00:00",
-      "breakTime": "1800",
+      "breakTime": "30",
       "status": "pending",
       "notes": "Weekend delivery - additional surcharge applies",
-      "id": 140
+      "id": 144
     },
     {
       "customerLoadId": 40,
@@ -1666,26 +1666,12 @@
       "endingPoint": "Munich",
       "startDate": "2025-07-11",
       "startTime": "11:24:00",
-      "endDate": "2025-07-11",
-      "endTime": "15:00:00",
-      "breakTime": null,
-      "status": "pending",
-      "notes": null,
-      "id": 141
-    },
-    {
-      "customerLoadId": 40,
-      "sequenceNumber": 2,
-      "startingPoint": "Munich",
-      "endingPoint": "Vienna",
-      "startDate": "2025-07-11",
-      "startTime": "22:57:00",
       "endDate": "2025-07-12",
       "endTime": "08:00:00",
-      "breakTime": "2700",
+      "breakTime": "45",
       "status": "pending",
-      "notes": "SHORT break",
-      "id": 142
+      "notes": null,
+      "id": 145
     }
   ]
 }
