@@ -1,9 +1,9 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const customerLoads = pgTable("customer_loads", {
-  id: serial("id").primaryKey(),
+export const customerLoads = sqliteTable("customer_loads", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   slNo: text("sl_no").notNull(),
   customerName: text("customer_name").notNull(),
   location: text("location"),
@@ -19,14 +19,14 @@ export const customerLoads = pgTable("customer_loads", {
   deliveryEndDate: text("delivery_end_date"),
   deliveryStartTime: text("delivery_start_time"),
   deliveryEndTime: text("delivery_end_time"),
-  deliveryStatus: text("delivery_status").notNull().default("pending"), // pending, in-progress, completed, cancelled
-  aiSuggestionAccepted: boolean("ai_suggestion_accepted").default(false),
+  deliveryStatus: text("delivery_status").notNull().default("pending"),
+  aiSuggestionAccepted: integer("ai_suggestion_accepted", { mode: "boolean" }).default(false),
   aiSuggestionResource: text("ai_suggestion_resource"),
   aiAssistantId: text("ai_assistant_id"),
 });
 
-export const journeyMilestones = pgTable("journey_milestones", {
-  id: serial("id").primaryKey(),
+export const journeyMilestones = sqliteTable("journey_milestones", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   customerLoadId: integer("customer_load_id").notNull(),
   sequenceNumber: integer("sequence_number").notNull(),
   startingPoint: text("starting_point").notNull(),
@@ -35,22 +35,28 @@ export const journeyMilestones = pgTable("journey_milestones", {
   startTime: text("start_time").notNull(),
   endDate: text("end_date").notNull(),
   endTime: text("end_time").notNull(),
-  breakTime: text("break_time"), // in minutes
-  status: text("status").notNull().default("pending"), // pending, in-progress, completed, cancelled
+  breakTime: text("break_time"),
+  status: text("status").notNull().default("pending"),
   notes: text("notes"),
 });
 
-export const trucks = pgTable("trucks", {
-  id: serial("id").primaryKey(),
+export const trucks = sqliteTable("trucks", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   plateNumber: text("plate_number").notNull().unique(),
-  status: text("status").notNull(), // 'available', 'busy', 'maintenance'
+  status: text("status").notNull(),
   assignedTo: text("assigned_to"),
 });
 
-export const notepad = pgTable("notepad", {
-  id: serial("id").primaryKey(),
+export const notepad = sqliteTable("notepad", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   content: text("content").notNull(),
   updatedAt: text("updated_at").notNull(),
+});
+
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
 });
 
 export const insertCustomerLoadSchema = createInsertSchema(customerLoads).omit({
@@ -70,6 +76,11 @@ export const insertNotepadSchema = createInsertSchema(notepad).omit({
   id: true,
 });
 
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+});
+
 export type CustomerLoad = typeof customerLoads.$inferSelect;
 export type InsertCustomerLoad = z.infer<typeof insertCustomerLoadSchema>;
 export type JourneyMilestone = typeof journeyMilestones.$inferSelect;
@@ -78,17 +89,5 @@ export type Truck = typeof trucks.$inferSelect;
 export type InsertTruck = z.infer<typeof insertTruckSchema>;
 export type Notepad = typeof notepad.$inferSelect;
 export type InsertNotepad = z.infer<typeof insertNotepadSchema>;
-
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-});
-
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
-
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;

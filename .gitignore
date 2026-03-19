@@ -4,3 +4,6 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+logiflow.db
+logiflow.db-wal
+logiflow.db-shm
